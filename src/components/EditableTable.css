@@ -1,0 +1,98 @@
+.et-wrap {
+  overflow-x: visible;
+}
+.et-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  text-align: right;
+}
+.et-table thead th,
+.et-table tbody td {
+  font-size: 0.75rem;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--color-border);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.et-table thead th {
+  font-weight: 700;
+  color: var(--color-text-light);
+  background: var(--color-bg);
+}
+.et-table tbody tr:last-child td { border-bottom: none; }
+
+.et-input {
+  width: 100%;
+  min-width: 48px;
+  font: inherit;
+  font-size: 0.78rem;
+  color: var(--color-text);
+  padding: 6px 8px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.et-input:hover { border-color: var(--color-border); }
+.et-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  background: var(--color-bg-white);
+  box-shadow: 0 0 0 2px var(--color-primary-soft);
+}
+.et-readonly {
+  display: inline-block;
+  padding: 6px 8px;
+  font-family: var(--font-family-en);
+  font-weight: 700;
+  font-size: 0.78rem;
+  color: var(--color-primary);
+}
+.et-check {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+  display: block;
+  margin: 0 auto;
+}
+.et-act.et-flow { color: var(--color-pos); }
+.et-act.et-flow:hover { background: var(--color-pos-soft); border-color: var(--color-pos); }
+.et-act.et-codedel { color: var(--color-accent); font-size: 0.78rem; }
+.et-act.et-codedel:hover { background: rgba(214,74,46,0.12); border-color: var(--color-accent); }
+.et-num { text-align: left; font-family: var(--font-family-en); }
+.et-w-xs { min-width: 42px; max-width: 60px; }
+.et-w-sm { min-width: 54px; max-width: 80px; }
+.et-w-md { min-width: 88px; max-width: 120px; }
+.et-w-lg { min-width: 140px; }
+.et-select { cursor: pointer; min-width: 80px; }
+.et-money-pos { color: var(--color-pos); font-weight: 600; }
+.et-money-neg { color: var(--color-accent); font-weight: 600; }
+.et-select { cursor: pointer; min-width: 110px; }
+
+.et-actions-h { text-align: center; width: 1%; white-space: nowrap; }
+.et-actions {
+  text-align: center;
+  white-space: nowrap;
+  padding-right: 4px;
+  padding-left: 4px;
+}
+.et-act {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-white);
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1;
+  margin: 0 1px;
+  transition: all 0.15s ease;
+}
+.et-add { color: var(--color-pos); }
+.et-add:hover { background: var(--color-pos-soft); border-color: var(--color-pos); }
+.et-del { color: var(--color-accent); }
+.et-del:hover { background: rgba(214, 74, 46, 0.12); border-color: var(--color-accent); }

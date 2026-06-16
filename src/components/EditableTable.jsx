@@ -1,0 +1,188 @@
+import { useState, useRef } from 'react'
+import './EditableTable.css'
+
+const fmtMoney = (v) => {
+  const n = parseFloat(String(v || '').replace(/,/g, ''))
+  if (isNaN(n)) return v || ''
+  return n.toLocaleString('he-IL', { maximumFractionDigits: 0 })
+}
+
+const moneySign = (v) => {
+  const n = parseFloat(String(v || '').replace(/,/g, ''))
+  if (isNaN(n) || n === 0) return ''
+  return n > 0 ? 'et-pos' : 'et-neg'
+}
+
+const fmtMMYY = (v) => {
+  const digits = (v || '').replace(/\D/g, '').slice(0, 4)
+  if (digits.length <= 2) return digits
+  return `${digits.slice(0, 2)}/${digits.slice(2)}`
+}
+
+export default function EditableTable({ columns, data, onChange, onAddBelow, onDelete, rowActions = [] }) {
+  const cells = useRef({})
+  const [focused, setFocused] = useState(null)
+
+  const ck = (ri, key) => `${ri}:${key}`
+
+  const selectSoon = (el) => {
+    if (el && el.select) setTimeout(() => { try { el.select() } catch {} }, 0)
+  }
+
+  const focusCell = (ri, key) => {
+    const el = cells.current[ck(ri, key)]
+    if (el) el.focus()
+  }
+
+  const handleKeyDown = (e, ri, col) => {
+    if (e.key === 'F10') {
+      e.preventDefault()
+      if (ri > 0) onChange(data[ri].id, col.key, data[ri - 1][col.key])
+      return
+    }
+    if (e.key === 'ArrowUp' && ri > 0) {
+      e.preventDefault()
+      focusCell(ri - 1, col.key)
+    } else if (e.key === 'ArrowDown' && ri < data.length - 1) {
+      e.preventDefault()
+      focusCell(ri + 1, col.key)
+    }
+  }
+
+  const renderField = (row, ri, col) => {
+    const key = ck(ri, col.key)
+    if (col.type === 'readonly') {
+      return <span className="et-readonly">{row[col.key]}</span>
+    }
+    if (col.type === 'checkbox') {
+      return (
+        <input
+          type="checkbox"
+          className="et-check"
+          checked={!!row[col.key]}
+          onChange={(e) => onChange(row.id, col.key, e.target.checked)}
+        />
+      )
+    }
+    if (col.type === 'month') {
+      return (
+        <input
+          type="month"
+          className="et-input et-w-sm"
+          value={row[col.key] || ''}
+          onChange={(e) => onChange(row.id, col.key, e.target.value)}
+        />
+      )
+    }
+    if (col.type === 'select') {
+      return (
+        <select
+          ref={(el) => (cells.current[key] = el)}
+          className="et-input et-select"
+          value={String(row[col.key])}
+          onChange={(e) => {
+            const opt = col.options.find((o) => String(o.v) === e.target.value)
+            onChange(row.id, col.key, opt ? opt.v : e.target.value)
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'F10') handleKeyDown(e, ri, col)
+          }}
+        >
+          {col.options.map((o) => (
+            <option key={String(o.v)} value={String(o.v)}>
+              {o.l}
+            </option>
+          ))}
+        </select>
+      )
+    }
+    const isMoney = col.type === 'money'
+    const raw = row[col.key] ?? ''
+    const blurredMoney = isMoney && focused !== key
+    const display = blurredMoney ? fmtMoney(raw) : raw
+    const moneyCls = blurredMoney ? moneySign(raw) : ''
+    const sizeCls = col.w
+      ? `et-w-${col.w}`
+      : isMoney
+      ? 'et-w-sm'
+      : col.key === 'details' || col.key === 'notes'
+      ? 'et-w-lg'
+      : ''
+    return (
+      <input
+        ref={(el) => (cells.current[key] = el)}
+        className={`et-input ${isMoney ? 'et-num' : ''} ${moneyCls} ${sizeCls}`}
+        type="text"
+        inputMode={isMoney || col.type === 'mmyy' ? 'numeric' : undefined}
+        value={display}
+        onChange={(e) =>
+          onChange(
+            row.id,
+            col.key,
+            col.type === 'mmyy' ? fmtMMYY(e.target.value) : e.target.value
+          )
+        }
+        onFocus={(e) => {
+          const el = e.target
+          setFocused(key)
+          selectSoon(el)
+        }}
+        onBlur={() => setFocused((f) => (f === key ? null : f))}
+        onKeyDown={(e) => handleKeyDown(e, ri, col)}
+      />
+    )
+  }
+
+  return (
+    <div className="et-wrap">
+      <table className="et-table">
+        <thead>
+          <tr>
+            <th className="et-actions-h">פעולות</th>
+            {columns.map((c) => (
+              <th key={c.key}>{c.label}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {data.map((row, ri) => (
+            <tr key={row.id}>
+              <td className="et-actions">
+                <button
+                  type="button"
+                  className="et-act et-add"
+                  title="הוסף שורה זהה מתחת"
+                  onClick={() => onAddBelow(row.id)}
+                >
+                  +
+                </button>
+                <button
+                  type="button"
+                  className="et-act et-del"
+                  title="מחק שורה"
+                  onClick={() => onDelete(row.id)}
+                >
+                  ×
+                </button>
+                {rowActions.map((a) => (
+                  <button
+                    key={a.key}
+                    type="button"
+                    className={`et-act ${a.cls || ''}`}
+                    title={a.title}
+                    onClick={() => a.onClick(row)}
+                  >
+                    {a.label}
+                  </button>
+                ))}
+              </td>
+              {columns.map((c) => (
+                <td key={c.key}>{renderField(row, ri, c)}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
