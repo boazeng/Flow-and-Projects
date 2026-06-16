@@ -1,0 +1,7 @@
+services:
+  flow:
+    build: .
+    container_name: flow
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8093:80"   # localhost only — the Cloudflare Tunnel connects locally

@@ -1,70 +1,74 @@
-# Deploying Flow and Projects to AWS
+# Deploying Flow and Projects to the Mac mini
 
-Same EC2 box as **bank-discrepancies** and **supplierinvoice**, but this is the
-**simplest of the three**: a pure **static Vite/React site**. No backend, no
-gunicorn, no systemd service, no dedicated port. **nginx** serves the built
-files directly, TLS via Let's Encrypt behind **Cloudflare**.
+Follows the proven pattern in `~/server/readme_load_server.md` and the runbook
+`MAC-MINI-APP-INSTALL.md`: each app = a Docker container (OrbStack) on a unique
+local port, exposed publicly through the shared **Cloudflare Tunnel**.
 
-## How the three sites coexist on one box
+This app is the **simplest case — a static Vite/React site, no backend**. The
+container is just nginx serving the build; there are **no secrets / no `.env`**.
 
-Each site is just its own nginx `server_name`. No port collisions.
+## Allocation
 
-| Site | Type | Internal port | nginx conf |
-|------|------|---------------|------------|
-| bookkeeping / supplierinvoice | Flask/gunicorn | 8000 | (existing) |
-| bank-discrepancies | Flask/gunicorn | 5000 | `zz-bank.conf` |
-| **flow** (this) | **static — nginx only** | **none** | `zz-flow.conf` |
+| Param | Value |
+|-------|-------|
+| Repo | github.com/boazeng/Flow-and-Projects |
+| Folder | `~/server/flow` |
+| **Port** | **8093** (next free in the registry) |
+| Subdomain | `flow.newavera.co.il` |
+| Container | `flow` |
+| State / secrets | none (static site) |
 
-## Architecture
+## Files in this repo for the Mac deploy
 
-Public URL: **https://flow.newavera.co.il**
+| File | Purpose |
+|------|---------|
+| `Dockerfile` | Multi-stage: node builds the site → nginx serves it. Self-contained. |
+| `docker-compose.yml` | Maps `127.0.0.1:8093 -> :80`, `container_name: flow`. |
+| `deploy/nginx-container.conf` | nginx config inside the container (SPA fallback). |
+| `.dockerignore` | Keeps `.git`, `node_modules`, `dist` out of the build context. |
 
-```
-Cloudflare ─▶ nginx :443 (flow.newavera.co.il) ─▶ static files in /var/www/flow.newavera.co.il
-```
-
-The build is published to `/var/www/flow.newavera.co.il` (world-readable, avoids
-home-dir permission issues). `dist/` is gitignored, so the site is **built on the
-box** — that's why Node is installed during setup.
-
-## First-time setup (on the existing EC2 instance)
-
-Ports 80/443 are already open (the sibling sites use them). SSH in, then:
+## Deploy steps (run ON the Mac — locally or via the Mac's Claude)
 
 ```bash
-git clone https://github.com/boazeng/Flow-and-Projects.git ~/Flow-and-Projects
-bash ~/Flow-and-Projects/deploy/setup_ec2.sh
+# 1. Clone and build
+cd ~/server
+git clone https://github.com/boazeng/Flow-and-Projects.git flow
+cd flow
+~/.orbstack/bin/docker compose up -d --build
+
+# 2. Verify the container serves locally (expect 200)
+curl -s -o /dev/null -w "local=%{http_code}\n" http://127.0.0.1:8093/
+
+# 3. Add the tunnel ingress — edit ~/.cloudflared/config.yml,
+#    add ABOVE the catch-all 404 service:
+#      - hostname: flow.newavera.co.il
+#        service: http://localhost:8093
+/opt/homebrew/bin/cloudflared tunnel ingress validate
+
+# 4. Restart the tunnel (needs sudo — must run on the Mac itself)
+sudo launchctl stop com.cloudflare.cloudflared && sudo launchctl start com.cloudflare.cloudflared
 ```
 
-The script installs git + nginx + Node 20, builds the site, publishes it to
-`/var/www/flow.newavera.co.il`, and installs the nginx config as
-`/etc/nginx/conf.d/zz-flow.conf`. Then:
+## Cloudflare DNS (dashboard)
+
+- If a record named `flow` already exists, **delete it** (Cloudflare can't change a record's Type).
+- Add record: Type=`CNAME`, Name=`flow`,
+  Target=`ae8d8404-c382-475e-a31d-ad5ee34387e1.cfargotunnel.com`, Proxy=🟠 Proxied.
+
+## Verify
 
 ```bash
-sudo nginx -t && sudo systemctl reload nginx
-sudo certbot --nginx -d flow.newavera.co.il   # issues TLS + adds the HTTPS block
-sudo systemctl reload nginx
+curl -s -o /dev/null -w "%{http_code}\n" https://flow.newavera.co.il/   # 200
+~/.orbstack/bin/docker logs flow --since 20s                            # traffic hits this container
 ```
 
-## Subdomain / DNS (Cloudflare)
+## Housekeeping
 
-- DNS record: type `A`, name `flow`, value = the EC2 public IP
-  (same IP as `bank-discrepancies` / `bookkeeping`), **Proxied** (orange cloud).
-- `server_name` in `deploy/nginx-flow.conf` is already `flow.newavera.co.il`.
+- Update the port registry (`8093 = flow`) and the "what's running" table in
+  `~/server/readme_load_server.md`.
 
 ## Updating after a code change
 
 ```bash
-# locally: commit + push, then on the box:
-bash ~/Flow-and-Projects/deploy/update.sh
+cd ~/server/flow && git pull --ff-only && ~/.orbstack/bin/docker compose up -d --build
 ```
-
-It pulls, rebuilds, republishes to the webroot, and reloads nginx.
-
-## Files in this folder
-
-| File | Purpose |
-|------|---------|
-| `setup_ec2.sh` | One-time provisioning: installs Node/nginx, builds, publishes, installs nginx conf. |
-| `nginx-flow.conf` | nginx static server block (SPA fallback) for the subdomain. |
-| `update.sh` | git pull + rebuild + republish + reload nginx. |
