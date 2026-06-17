@@ -185,7 +185,10 @@ export default function CashflowPage() {
   const [expectedItems, setExpectedItems] = useState(() => {
     try {
       const saved = localStorage.getItem('flow-expected-items')
-      if (saved) return JSON.parse(saved)
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        return Array.isArray(parsed) ? parsed : []
+      }
     } catch {}
     return []
   })
@@ -242,7 +245,10 @@ export default function CashflowPage() {
   const [categories, setCategories] = useState(() => {
     try {
       const saved = localStorage.getItem('cashflow-categories')
-      if (saved) return JSON.parse(saved)
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        return Array.isArray(parsed) ? parsed : [...DEFAULT_CATEGORIES]
+      }
     } catch {}
     return [...DEFAULT_CATEGORIES]
   })
