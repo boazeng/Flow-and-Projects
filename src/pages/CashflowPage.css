@@ -40,8 +40,14 @@
   align-items: center;
   gap: 10px;
 }
+.cf-brand-divider {
+  width: 1px;
+  height: 28px;
+  background: var(--color-border);
+  margin: 0 4px;
+}
 .cf-brand-logo {
-  height: 52px;
+  height: 40px;
   width: auto;
   object-fit: contain;
 }
@@ -56,14 +62,14 @@
   gap: 1px;
 }
 .cf-brand-name {
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   font-weight: 700;
   color: #a07820;
   letter-spacing: 0.06em;
   line-height: 1.2;
 }
 .cf-brand-tagline {
-  font-size: 0.7rem;
+  font-size: 0.63rem;
   font-weight: 500;
   color: #b8993a;
   letter-spacing: 0.08em;

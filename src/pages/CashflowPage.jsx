@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useLocation } from 'react-router-dom'
 import EditableTable from '../components/EditableTable'
 import ParkingProjectsEmbed from './ParkingProjectsEmbed'
+import TactLogo from '../components/TactLogo'
 import './CashflowPage.css'
 
 const COMPANIES = [
@@ -409,6 +410,8 @@ export default function CashflowPage() {
         <div className="cf-head">
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', flexWrap: 'wrap' }}>
             <div className="cf-brand">
+              <TactLogo tone="light" size={0.82} />
+              <div className="cf-brand-divider" />
               <img src="/logo.jpg" alt="Urban Group" className="cf-brand-logo" />
               <div className="cf-brand-text">
                 <span className="cf-brand-name">קבוצה אורבנית</span>
