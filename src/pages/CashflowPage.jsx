@@ -404,7 +404,10 @@ export default function CashflowPage() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', flexWrap: 'wrap' }}>
             <div className="cf-brand">
               <img src="/logo.jpg" alt="Urban Group" className="cf-brand-logo" />
-              <span className="cf-subtitle">ניהול תזרים ופרויקטים</span>
+              <div className="cf-brand-text">
+                <span className="cf-brand-name">קבוצה אורבנית</span>
+                <span className="cf-brand-tagline">ניהול תזרים ופרויקטים</span>
+              </div>
             </div>
             <div className="cf-tabs">
               <button className={`cf-tab ${mainTab === 'banks' ? 'active' : ''}`} onClick={() => setMainTab('banks')}>יתרות בנקים</button>

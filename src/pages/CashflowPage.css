@@ -50,11 +50,25 @@
   font-weight: 800;
   color: var(--color-primary);
 }
-.cf-subtitle {
-  font-size: 0.8rem;
+.cf-brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.cf-brand-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #a07820;
+  letter-spacing: 0.06em;
+  font-family: Georgia, 'Times New Roman', serif;
+  line-height: 1.2;
+}
+.cf-brand-tagline {
+  font-size: 0.7rem;
   font-weight: 500;
-  color: #64748b;
-  letter-spacing: 0.04em;
+  color: #b8993a;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .cf-controls {
