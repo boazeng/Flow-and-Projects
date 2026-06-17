@@ -4,4 +4,8 @@ services:
     container_name: flow
     restart: unless-stopped
     ports:
-      - "127.0.0.1:8093:80"   # localhost only — the Cloudflare Tunnel connects locally
+      - "127.0.0.1:8093:8000"   # localhost only — the Cloudflare Tunnel connects locally
+    env_file:
+      - .env                    # Google OAuth + session secrets (never in git)
+    volumes:
+      - ./database:/app/database   # SQLite: flow.db (data) + auth.db (users) survive restarts

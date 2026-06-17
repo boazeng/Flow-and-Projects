@@ -1,11 +1,15 @@
 # Deploying Flow and Projects to the Mac mini
 
-Follows the proven pattern in `~/server/readme_load_server.md` and the runbook
-`MAC-MINI-APP-INSTALL.md`: each app = a Docker container (OrbStack) on a unique
-local port, exposed publicly through the shared **Cloudflare Tunnel**.
+A Docker container (OrbStack) on a unique local port, exposed through the shared
+**Cloudflare Tunnel**. Follows `~/server/readme_load_server.md` /
+`MAC-MINI-APP-INSTALL.md`.
 
-This app is the **simplest case — a static Vite/React site, no backend**. The
-container is just nginx serving the build; there are **no secrets / no `.env`**.
+Unlike the original static version, the app now has a **FastAPI backend**:
+- **Google sign-in** (shared-auth) gates the whole app — financial data is no
+  longer open on a public URL.
+- A **central SQLite store** (`flow.db`) mirrors the browser's localStorage, so
+  data is shared across devices/browsers instead of living in one browser.
+- FastAPI also serves the built React SPA.
 
 ## Allocation
 
@@ -13,62 +17,67 @@ container is just nginx serving the build; there are **no secrets / no `.env`**.
 |-------|-------|
 | Repo | github.com/boazeng/Flow-and-Projects |
 | Folder | `~/server/flow` |
-| **Port** | **8093** (next free in the registry) |
+| **Port** | **8093** (container listens on 8000) |
 | Subdomain | `flow.newavera.co.il` |
 | Container | `flow` |
-| State / secrets | none (static site) |
+| Data | `~/server/flow/database/flow.db` + `auth.db` (volume) |
+| Secrets | `~/server/flow/.env` (Google OAuth + session secret, chmod 600) |
 
-## Files in this repo for the Mac deploy
+## Secrets — `.env` (never in git)
 
-| File | Purpose |
-|------|---------|
-| `Dockerfile` | Multi-stage: node builds the site → nginx serves it. Self-contained. |
-| `docker-compose.yml` | Maps `127.0.0.1:8093 -> :80`, `container_name: flow`. |
-| `deploy/nginx-container.conf` | nginx config inside the container (SPA fallback). |
-| `.dockerignore` | Keeps `.git`, `node_modules`, `dist` out of the build context. |
+| Key | What |
+|-----|------|
+| `GOOGLE_OAUTH_CLIENT_ID` / `GOOGLE_OAUTH_CLIENT_SECRET` | Google OAuth client |
+| `AUTH_SESSION_SECRET` | random — `openssl rand -hex 32` |
+| `AUTH_EMERGENCY_TOKEN` | optional bypass token |
+| `AUTH_SUPER_ADMIN_EMAIL` | `boazen@gmail.com` |
+| `AUTH_REDIRECT_URI` | `https://flow.newavera.co.il/auth/callback` |
 
-## Deploy steps (run ON the Mac — locally or via the Mac's Claude)
+⚠️ In Google Cloud Console, add `https://flow.newavera.co.il/auth/callback` to the
+OAuth client's **Authorized redirect URIs** before first login.
+
+## Deploy steps (run ON the Mac)
 
 ```bash
-# 1. Clone and build
 cd ~/server
 git clone https://github.com/boazeng/Flow-and-Projects.git flow
 cd flow
+
+# secrets (fill in the Google client id/secret + a random session secret)
+cp .env.example .env && chmod 600 .env && nano .env
+
 ~/.orbstack/bin/docker compose up -d --build
-
-# 2. Verify the container serves locally (expect 200)
-curl -s -o /dev/null -w "local=%{http_code}\n" http://127.0.0.1:8093/
-
-# 3. Add the tunnel ingress — edit ~/.cloudflared/config.yml,
-#    add ABOVE the catch-all 404 service:
-#      - hostname: flow.newavera.co.il
-#        service: http://localhost:8093
-/opt/homebrew/bin/cloudflared tunnel ingress validate
-
-# 4. Restart the tunnel (needs sudo — must run on the Mac itself)
-sudo launchctl stop com.cloudflare.cloudflared && sudo launchctl start com.cloudflare.cloudflared
+curl -s -o /dev/null -w "local=%{http_code}\n" http://127.0.0.1:8093/   # 307/302 -> /login (auth working)
 ```
 
-## Cloudflare DNS (dashboard)
+## Cloudflare Tunnel + DNS
 
-- If a record named `flow` already exists, **delete it** (Cloudflare can't change a record's Type).
-- Add record: Type=`CNAME`, Name=`flow`,
-  Target=`ae8d8404-c382-475e-a31d-ad5ee34387e1.cfargotunnel.com`, Proxy=🟠 Proxied.
+1. `~/.cloudflared/config.yml` — add ABOVE the catch-all 404:
+   ```yaml
+     - hostname: flow.newavera.co.il
+       service: http://localhost:8093
+   ```
+   `/opt/homebrew/bin/cloudflared tunnel ingress validate`
+2. `sudo launchctl stop com.cloudflare.cloudflared && sudo launchctl start com.cloudflare.cloudflared`
+3. Cloudflare dashboard: delete any old `flow` record, then add
+   **CNAME** `flow` → `ae8d8404-c382-475e-a31d-ad5ee34387e1.cfargotunnel.com`, Proxied 🟠.
+
+## Import the existing data (one-time)
+
+After logging in, open the app → **⬆ שחזור נתונים** → pick the backup JSON. The
+restore writes to localStorage, which the sync layer pushes to `flow.db` — so it
+becomes the shared central copy for every device.
 
 ## Verify
 
 ```bash
-curl -s -o /dev/null -w "%{http_code}\n" https://flow.newavera.co.il/   # 200
-~/.orbstack/bin/docker logs flow --since 20s                            # traffic hits this container
+curl -s -o /dev/null -w "%{http_code}\n" https://flow.newavera.co.il/   # 302 -> Google login
+~/.orbstack/bin/docker logs flow --since 30s
 ```
 
-## Housekeeping
-
-- Update the port registry (`8093 = flow`) and the "what's running" table in
-  `~/server/readme_load_server.md`.
-
-## Updating after a code change
+## Update after a code change
 
 ```bash
 cd ~/server/flow && git pull --ff-only && ~/.orbstack/bin/docker compose up -d --build
 ```
+(The `database/` volume — your data — survives rebuilds.)
