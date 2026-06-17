@@ -14,6 +14,7 @@ export default function SystemPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [newEmail, setNewEmail] = useState('')
+  const [newName, setNewName] = useState('')
   const [newRole, setNewRole] = useState('user')
 
   useEffect(() => {
@@ -54,8 +55,8 @@ export default function SystemPage() {
   const addUser = async () => {
     const email = newEmail.trim().toLowerCase()
     if (!email || !email.includes('@')) { alert('אימייל לא תקין'); return }
-    await saveUser(email, { role: newRole, active: true, name: '' })
-    setNewEmail(''); setNewRole('user')
+    await saveUser(email, { role: newRole, active: true, name: newName.trim() })
+    setNewEmail(''); setNewName(''); setNewRole('user')
   }
 
   const deleteUser = async (email) => {
@@ -100,9 +101,12 @@ export default function SystemPage() {
       {tab === 'users' && (
         <div className="cf-card" style={{ padding: '1.25rem' }}>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+            <input value={newName} onChange={(e) => setNewName(e.target.value)}
+              placeholder="שם…" onKeyDown={(e) => { if (e.key === 'Enter') addUser() }}
+              style={{ ...field, minWidth: '160px' }} />
             <input value={newEmail} onChange={(e) => setNewEmail(e.target.value)} type="email"
               placeholder="הוסף אימייל (Gmail)…" onKeyDown={(e) => { if (e.key === 'Enter') addUser() }}
-              style={{ ...field, minWidth: '260px' }} />
+              style={{ ...field, minWidth: '240px' }} />
             <select value={newRole} onChange={(e) => setNewRole(e.target.value)} style={field}>
               {ROLES.map((r) => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}
             </select>
@@ -115,8 +119,8 @@ export default function SystemPage() {
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem', direction: 'rtl' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc' }}>
-                    <th style={th}>אימייל</th>
                     <th style={th}>שם</th>
+                    <th style={th}>אימייל</th>
                     <th style={th}>רמת הרשאה</th>
                     <th style={th}>סטטוס</th>
                     <th style={th}>כניסה אחרונה</th>
@@ -129,8 +133,12 @@ export default function SystemPage() {
                     const self = u.email === me.email
                     return (
                       <tr key={u.email} style={{ background: i % 2 === 0 ? '#fff' : '#fafafa', borderBottom: '1px solid #f1f5f9' }}>
+                        <td style={td}>
+                          <input key={`name-${u.email}-${u.name || ''}`} defaultValue={u.name || ''} placeholder="הוסף שם…"
+                            onBlur={(e) => { const v = e.target.value.trim(); if (v !== (u.name || '')) saveUser(u.email, { name: v }) }}
+                            style={{ ...field, padding: '4px 8px', minWidth: '120px' }} />
+                        </td>
                         <td style={td}>{u.email}{self && <span style={{ color: '#94a3b8', fontSize: '0.75rem' }}> (אתה)</span>}</td>
-                        <td style={td}>{u.name || '—'}</td>
                         <td style={td}>
                           <select value={u.role} disabled={self} onChange={(e) => saveUser(u.email, { role: e.target.value })}
                             style={{ ...field, padding: '4px 8px', opacity: self ? 0.6 : 1 }}>
