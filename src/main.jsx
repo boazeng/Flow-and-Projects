@@ -3,15 +3,13 @@ import ReactDOM from 'react-dom/client'
 import App from './App'
 import './index.css'
 
-// Fix corrupted localStorage array values before app mounts
-;['flow-expected-items', 'cashflow-categories'].forEach((key) => {
-  try {
-    const val = localStorage.getItem(key)
-    if (val !== null && !Array.isArray(JSON.parse(val))) localStorage.removeItem(key)
-  } catch {
-    localStorage.removeItem(key)
-  }
-})
+// On version bump, force-remove any corrupted array keys so the app doesn't crash
+const APP_VERSION = '2'
+if (localStorage.getItem('app-version') !== APP_VERSION) {
+  localStorage.removeItem('flow-expected-items')
+  localStorage.removeItem('cashflow-categories')
+  localStorage.setItem('app-version', APP_VERSION)
+}
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
