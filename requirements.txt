@@ -1,0 +1,5 @@
+fastapi>=0.110
+uvicorn[standard]>=0.30
+python-dotenv>=1.0
+# Google sign-in + roles (pulls httpx, itsdangerous, fastapi)
+shared-auth @ git+https://github.com/boazeng/shared-auth.git

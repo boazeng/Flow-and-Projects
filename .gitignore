@@ -1,3 +1,17 @@
 node_modules/
 dist/
 .env
+
+# Python / backend
+.venv/
+__pycache__/
+*.pyc
+
+# SQLite data (lives in the database/ volume on the server)
+database/
+*.db
+*.db-wal
+*.db-shm
+
+# Local Claude tooling config
+.claude/
