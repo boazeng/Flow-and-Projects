@@ -416,11 +416,7 @@ export default function CashflowPage() {
             <div className="cf-brand">
               <TactLogo tone="light" size={0.82} />
               <div className="cf-brand-divider" />
-              <img src="/logo.jpg" alt="Urban Group" className="cf-brand-logo" />
-              <div className="cf-brand-text">
-                <span className="cf-brand-name">קבוצה אורבנית</span>
-                <span className="cf-brand-tagline">ניהול תזרים ופרויקטים</span>
-              </div>
+              <span className="cf-brand-desc">ניהול תזרים ותקציב פרויקטים</span>
             </div>
             <div className="cf-tabs">
               <button className={`cf-tab ${mainTab === 'banks' ? 'active' : ''}`} onClick={() => setMainTab('banks')}>יתרות בנקים</button>
