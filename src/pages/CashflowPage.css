@@ -35,10 +35,26 @@
   gap: 16px;
   margin-bottom: 22px;
 }
+.cf-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.cf-brand-logo {
+  height: 52px;
+  width: auto;
+  object-fit: contain;
+}
 .cf-title {
   font-size: 1.9rem;
   font-weight: 800;
   color: var(--color-primary);
+}
+.cf-subtitle {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #64748b;
+  letter-spacing: 0.04em;
 }
 
 .cf-controls {
