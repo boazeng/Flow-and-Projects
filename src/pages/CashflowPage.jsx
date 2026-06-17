@@ -402,7 +402,10 @@ export default function CashflowPage() {
       <div className="container">
         <div className="cf-head">
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', flexWrap: 'wrap' }}>
-            <h1 className="cf-title">תזרים ופרויקטים</h1>
+            <div className="cf-brand">
+              <img src="/logo.png" alt="Urban Group" className="cf-brand-logo" />
+              <span className="cf-subtitle">ניהול תזרים ופרויקטים</span>
+            </div>
             <div className="cf-tabs">
               <button className={`cf-tab ${mainTab === 'banks' ? 'active' : ''}`} onClick={() => setMainTab('banks')}>יתרות בנקים</button>
               <button className={`cf-tab ${mainTab === 'expected' ? 'active' : ''}`} onClick={() => setMainTab('expected')}>תזרים צפוי</button>
