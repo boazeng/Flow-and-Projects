@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import EditableTable from '../components/EditableTable'
 import ParkingProjectsEmbed from './ParkingProjectsEmbed'
 import TactLogo from '../components/TactLogo'
+import { fetchMe } from '../auth'
 import './CashflowPage.css'
 
 const COMPANIES = [
@@ -182,6 +183,9 @@ const COMPANY_COLORS = {
 
 export default function CashflowPage() {
   const location = useLocation()
+  const navigate = useNavigate()
+  const [isAdmin, setIsAdmin] = useState(false)
+  useEffect(() => { fetchMe().then((u) => setIsAdmin(u?.role === 'admin')) }, [])
   const [mainTab, setMainTab] = useState(location.state?.tab || 'banks')
   const [expectedItems, setExpectedItems] = useState(() => {
     try {
@@ -427,6 +431,12 @@ export default function CashflowPage() {
             </div>
           </div>
           <div style={{ display: 'flex', gap: '8px' }}>
+            {isAdmin && (
+              <button onClick={() => navigate('/system')} title="ניהול מערכת" aria-label="ניהול מערכת"
+                style={{ padding: '7px 12px', background: '#fff', color: '#1e3a5f', border: '1px solid #1e3a5f', borderRadius: '8px', fontSize: '16px', lineHeight: 1, cursor: 'pointer', fontFamily: 'inherit' }}>
+                ⚙️
+              </button>
+            )}
             <button onClick={handleBackup}
               style={{ padding: '7px 16px', background: '#1e3a5f', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
               ⬇ גיבוי נתונים
