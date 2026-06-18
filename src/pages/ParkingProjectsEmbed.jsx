@@ -362,10 +362,10 @@ export default function ParkingProjectsEmbed({ tab }) {
             const col = (id, label, note, valueNode, color) => (
               <button type="button"
                 onClick={() => id && setDashboardSection(dashboardSection === id ? '' : id)}
-                style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '2px', padding: '10px 14px', border: 'none', borderBottom: '1px solid #f1f5f9', background: dashboardSection === id ? `${color}10` : 'transparent', cursor: id ? 'pointer' : 'default', fontFamily: 'inherit', textAlign: 'right' }}>
+                style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '1px', padding: '7px 12px', border: 'none', borderBottom: '1px solid #f1f5f9', background: dashboardSection === id ? `${color}10` : 'transparent', cursor: id ? 'pointer' : 'default', fontFamily: 'inherit', textAlign: 'right' }}>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
-                  <span style={{ fontSize: '13px', color: '#475569', fontWeight: '600' }}>{label}</span>
-                  {note && <span style={{ fontSize: '12px', color: '#94a3b8' }}>{note}</span>}
+                  <span style={{ fontSize: '14px', color: '#475569', fontWeight: '600' }}>{label}</span>
+                  {note && <span style={{ fontSize: '18px', color: '#94a3b8', fontWeight: '700' }}>{note}</span>}
                 </div>
                 <div style={{ direction: 'ltr', textAlign: 'right' }}>{valueNode}</div>
               </button>
@@ -378,49 +378,55 @@ export default function ParkingProjectsEmbed({ tab }) {
                 <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '14px', overflow: 'hidden', marginBottom: '16px', boxShadow: '0 1px 6px rgba(0,0,0,0.05)' }}>
 
                   {/* Header */}
-                  <div style={{ padding: '11px 16px', background: '#1e3a5f', color: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontWeight: '700', fontSize: '13px' }}>מצב כספי — חניה אורבנית</span>
-                    <span style={{ fontSize: '11px', opacity: 0.5 }}>{visible.length} פרויקטים</span>
+                  <div style={{ padding: '9px 14px', background: '#f1f5f9', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontWeight: '700', fontSize: '13px', color: '#1e3a5f' }}>מצב כספי — חניה אורבנית</span>
+                    <span style={{ fontSize: '11px', color: '#94a3b8' }}>{visible.length} פרויקטים</span>
                   </div>
 
-                  {/* Two columns */}
+                  {/* Two columns — flat grid so total row stays aligned */}
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
 
-                    {/* Left — assets */}
-                    <div style={{ borderLeft: '1px solid #f1f5f9' }}>
+                    {/* Row 1 */}
+                    <div style={{ borderLeft: '1px solid #f1f5f9', borderBottom: '1px solid #f1f5f9' }}>
                       {col('deposits', 'פקדונות',
                         totalGuaranteesNum > 0 ? `ערבויות: ${totalGuaranteesNum.toLocaleString('he-IL')} ₪` : null,
                         amt(totalDepositsNum, GRN), GRN)}
+                    </div>
+                    <div style={{ borderBottom: '1px solid #f1f5f9' }}>
+                      {col('suppliers', 'חוב ליצרן', null,
+                        <div style={{ direction: 'ltr', textAlign: 'right' }}>
+                          {Object.entries(suppliersByCur).length > 0
+                            ? Object.entries(suppliersByCur).map(([cur, a]) => <div key={cur} style={{ fontSize: '20px', fontWeight: '700', color: RED }}>{a.toLocaleString('he-IL')} {cur}</div>)
+                            : <span style={{ fontSize: '20px', color: '#d1d5db' }}>—</span>}
+                          {suppliersILS > 0 && <div style={{ fontSize: '18px', fontWeight: '700', color: '#94a3b8' }}>≈ {Math.round(suppliersILS).toLocaleString('he-IL')} ₪</div>}
+                        </div>, RED)}
+                    </div>
+
+                    {/* Row 2 */}
+                    <div style={{ borderLeft: '1px solid #f1f5f9', borderBottom: '1px solid #e2e8f0' }}>
                       {col('clients', 'חייבים מלקוחות', null,
                         Object.entries(clientsByCur).length > 0
                           ? Object.entries(clientsByCur).map(([cur, a]) => <div key={cur} style={{ fontSize: '18px', fontWeight: '700', color: GRN, direction: 'ltr' }}>{a.toLocaleString('he-IL')} {cur}</div>)
                           : amt(0, GRN),
                         GRN)}
-                      <div style={{ padding: '9px 14px', background: '#f9fafb', borderTop: '1px solid #e2e8f0' }}>
-                        <div style={{ fontSize: '11px', color: '#94a3b8', marginBottom: '1px' }}>סה"כ</div>
-                        <div style={{ fontSize: '19px', fontWeight: '800', color: '#374151', direction: 'ltr' }}>{totalAssets.toLocaleString('he-IL')} ₪</div>
-                      </div>
+                    </div>
+                    <div style={{ borderBottom: '1px solid #e2e8f0' }}>
+                      {col('loans', 'הלוואות', null, amt(parkingLoansTotal, RED), RED)}
                     </div>
 
-                    {/* Right — liabilities */}
-                    <div>
-                      {col('suppliers', 'חוב ליצרן', null,
-                        <div style={{ direction: 'ltr', textAlign: 'right' }}>
-                          {Object.entries(suppliersByCur).length > 0
-                            ? Object.entries(suppliersByCur).map(([cur, a]) => <div key={cur} style={{ fontSize: '22px', fontWeight: '700', color: RED }}>{a.toLocaleString('he-IL')} {cur}</div>)
-                            : <span style={{ fontSize: '22px', color: '#d1d5db' }}>—</span>}
-                          {suppliersILS > 0 && <div style={{ fontSize: '12px', color: '#94a3b8' }}>≈ {Math.round(suppliersILS).toLocaleString('he-IL')} ₪</div>}
-                        </div>, RED)}
-                      {col(null, 'הלוואות', null, amt(parkingLoansTotal, RED), RED)}
-                      <div style={{ padding: '9px 14px', background: '#f9fafb', borderTop: '1px solid #e2e8f0' }}>
-                        <div style={{ fontSize: '11px', color: '#94a3b8', marginBottom: '1px' }}>סה"כ</div>
-                        <div style={{ fontSize: '19px', fontWeight: '800', color: '#374151', direction: 'ltr' }}>{totalLiabilities.toLocaleString('he-IL')} ₪</div>
-                      </div>
+                    {/* Row 3 — totals, same grid row = same height */}
+                    <div style={{ padding: '6px 12px', background: '#f9fafb', borderLeft: '1px solid #f1f5f9' }}>
+                      <div style={{ fontSize: '10px', color: '#94a3b8', marginBottom: '1px' }}>סה"כ</div>
+                      <div style={{ fontSize: '17px', fontWeight: '800', color: '#374151', direction: 'ltr' }}>{totalAssets.toLocaleString('he-IL')} ₪</div>
+                    </div>
+                    <div style={{ padding: '6px 12px', background: '#f9fafb' }}>
+                      <div style={{ fontSize: '10px', color: '#94a3b8', marginBottom: '1px' }}>סה"כ</div>
+                      <div style={{ fontSize: '17px', fontWeight: '800', color: '#374151', direction: 'ltr' }}>{totalLiabilities.toLocaleString('he-IL')} ₪</div>
                     </div>
                   </div>
 
                   {/* Net */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '11px 16px', background: netPos ? '#f8fffe' : '#fff8f8', borderTop: '1px solid #e2e8f0' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '7px 14px', background: netPos ? '#f8fffe' : '#fff8f8', borderTop: '1px solid #e2e8f0' }}>
                     <span style={{ fontSize: '12px', fontWeight: '600', color: '#64748b' }}>יתרה נטו</span>
                     <span style={{ fontSize: '18px', fontWeight: '800', color: netPos ? GRN : RED, direction: 'ltr' }}>
                       {netPos ? '+' : ''}{net.toLocaleString('he-IL')} ₪
@@ -436,6 +442,7 @@ export default function ParkingProjectsEmbed({ tab }) {
                         {dashboardSection === 'deposits'  && 'פירוט פקדונות'}
                         {dashboardSection === 'suppliers' && 'פירוט חוב ליצרן'}
                         {dashboardSection === 'clients'   && 'פירוט חייבים מלקוחות'}
+                        {dashboardSection === 'loans'     && 'פירוט הלוואות — חניה אורבנית'}
                       </span>
                       <button type="button" onClick={() => setDashboardSection('')} style={{ border: 'none', background: '#f1f5f9', color: '#64748b', padding: '5px 10px', borderRadius: '6px', cursor: 'pointer', fontSize: '12px' }}>סגור</button>
                     </div>
@@ -458,6 +465,17 @@ export default function ParkingProjectsEmbed({ tab }) {
                           <span style={{ fontSize: '13px', fontWeight: '700', color: '#15803d', direction: 'ltr' }}>{fmtAmountLabel(toNum(p.cli_contract) - toNum(p.cli_paid), p.cli_currency || '₪')}</span>
                         </div>
                       ))}
+                      {dashboardSection === 'loans' && (() => {
+                        try {
+                          const loans = JSON.parse(localStorage.getItem('cashflow-loan-balances') || '{}')['חניה אורבנית'] || []
+                          return loans.filter(l => toNum(l.amount) > 0).map(l => (
+                            <div key={l.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', borderRadius: '8px', background: '#fef2f2', border: '1px solid #fecaca' }}>
+                              <span style={{ fontSize: '13px', fontWeight: '600', color: '#1e293b' }}>{l.name || 'הלוואה'}</span>
+                              <span style={{ fontSize: '13px', fontWeight: '700', color: '#b91c1c', direction: 'ltr' }}>{toNum(l.amount).toLocaleString('he-IL')} ₪</span>
+                            </div>
+                          ))
+                        } catch { return null }
+                      })()}
                     </div>
                   </div>
                 )}
@@ -465,9 +483,9 @@ export default function ParkingProjectsEmbed({ tab }) {
             )
           })()}
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '28px 0 18px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '20px 0 14px' }}>
             <div style={{ flex: 1, height: '1px', background: '#e2e8f0' }} />
-            <span style={{ fontSize: '12px', fontWeight: '700', color: '#94a3b8', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>פרויקטים בביצוע</span>
+            <span style={{ fontSize: '16px', fontWeight: '700', color: '#1e3a5f', whiteSpace: 'nowrap' }}>פרויקטים בביצוע</span>
             <div style={{ flex: 1, height: '1px', background: '#e2e8f0' }} />
           </div>
 
