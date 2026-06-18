@@ -395,10 +395,9 @@ export default function ParkingProjectsEmbed({ tab }) {
                     <div style={{ borderBottom: '1px solid #f1f5f9' }}>
                       {col('suppliers', 'חוב ליצרן', null,
                         <div style={{ direction: 'ltr', textAlign: 'right' }}>
-                          {Object.entries(suppliersByCur).length > 0
-                            ? Object.entries(suppliersByCur).map(([cur, a]) => <div key={cur} style={{ fontSize: '20px', fontWeight: '700', color: RED }}>{a.toLocaleString('he-IL')} {cur}</div>)
+                          {suppliersILS > 0
+                            ? <span style={{ fontSize: '20px', fontWeight: '700', color: RED }}>{Math.round(suppliersILS).toLocaleString('he-IL')} ₪</span>
                             : <span style={{ fontSize: '20px', color: '#d1d5db' }}>—</span>}
-                          {suppliersILS > 0 && <div style={{ fontSize: '18px', fontWeight: '700', color: '#94a3b8' }}>≈ {Math.round(suppliersILS).toLocaleString('he-IL')} ₪</div>}
                         </div>, RED)}
                     </div>
 
