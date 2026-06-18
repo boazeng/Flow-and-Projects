@@ -237,6 +237,13 @@ export default function CashflowPage() {
     } catch {}
     return {}
   })
+  const [rentalDeposits, setRentalDeposits] = useState(() => {
+    try {
+      const saved = localStorage.getItem('cashflow-rental-deposits')
+      if (saved) return JSON.parse(saved)
+    } catch {}
+    return {}
+  })
   const [forecastView, setForecastView] = useState('monthly')
   const [selectedForecastMonth, setSelectedForecastMonth] = useState(() => {
     const now = new Date()
@@ -287,6 +294,10 @@ export default function CashflowPage() {
   useEffect(() => {
     localStorage.setItem('cashflow-loan-balances', JSON.stringify(loanBalances))
   }, [loanBalances])
+
+  useEffect(() => {
+    localStorage.setItem('cashflow-rental-deposits', JSON.stringify(rentalDeposits))
+  }, [rentalDeposits])
 
   const categoryOptions = categories.map((c) => ({ v: c, l: c }))
   const expectedCols = [
@@ -451,7 +462,8 @@ export default function CashflowPage() {
           const totalChecking   = COMPANY_BANKS.all.reduce((s, b) => s + (bankBalances[b.key] || 0), 0)
           const totalCredit     = COMPANY_BANKS.all.reduce((s, b) => s + (bankExtras[b.key + '_מסגרת'] || 0), 0)
           const totalLoans      = COMPANY_LIST.reduce((s, co) => s + (loanBalances[co] || []).reduce((ls, l) => ls + (l.amount || 0), 0), 0)
-          const totalDeposits   = Object.values(parkDeposits).reduce((s, v) => s + v, 0)
+          const totalRentalDeposits = COMPANY_LIST.reduce((s, co) => s + (rentalDeposits[co] || 0), 0)
+          const totalDeposits   = Object.values(parkDeposits).reduce((s, v) => s + v, 0) + totalRentalDeposits
           const totalGuarantees = Object.values(parkGuarantees).reduce((s, v) => s + v, 0)
 
           return (
@@ -562,24 +574,46 @@ export default function CashflowPage() {
                           )
                         })()}
 
-                        {(deposits > 0 || guarantees > 0) && (
-                          <div style={{ marginTop: '1rem', paddingTop: '0.75rem', borderTop: '1px solid #f1f5f9', display: 'flex', gap: '1.5rem' }}>
-                            {deposits > 0 && (
-                              <div>
-                                <div style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 600, marginBottom: '2px' }}>פקדונות</div>
-                                <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#0f766e' }}>{ils(deposits)}</div>
-                                <div style={{ fontSize: '0.68rem', color: '#94a3b8' }}>מפרויקטים</div>
+                        {(() => {
+                          const rentalDep = rentalDeposits[company] || 0
+                          const totalCompDep = deposits + rentalDep
+                          return (
+                            <div style={{ marginTop: '1rem', paddingTop: '0.75rem', borderTop: '1px solid #f1f5f9' }}>
+                              <div style={{ marginBottom: guarantees > 0 ? '0.75rem' : 0 }}>
+                                <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: '0.45rem' }}>פקדונות</div>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+                                  {deposits > 0 && (
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', color: '#475569' }}>
+                                      <span>פקדונות בגין ערבויות לפרויקטים</span>
+                                      <span style={{ direction: 'ltr', fontWeight: 600, color: '#0f766e' }}>{ils(deposits)}</span>
+                                    </div>
+                                  )}
+                                  <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.82rem', color: '#475569' }}>
+                                    <span>פקדון בגין ערבות לשכירות החרש 15</span>
+                                    <input type="text"
+                                      value={rentalDep ? Number(rentalDep).toLocaleString('he-IL', { maximumFractionDigits: 0 }) : ''}
+                                      placeholder="סכום ₪"
+                                      onChange={(e) => { const n = Number(e.target.value.replace(/[^\d.-]/g, '')) || 0; setRentalDeposits((prev) => ({ ...prev, [company]: n })) }}
+                                      style={{ width: '110px', border: '1px solid #e2e8f0', borderRadius: '4px', padding: '3px 8px', direction: 'ltr', fontSize: '0.82rem', textAlign: 'right' }} />
+                                  </label>
+                                  {deposits > 0 && rentalDep > 0 && (
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', fontWeight: 700, color: '#0f766e', borderTop: '1px solid #e2e8f0', paddingTop: '0.35rem', marginTop: '0.1rem' }}>
+                                      <span>סה"כ פקדונות</span>
+                                      <span style={{ direction: 'ltr' }}>{ils(totalCompDep)}</span>
+                                    </div>
+                                  )}
+                                </div>
                               </div>
-                            )}
-                            {guarantees > 0 && (
-                              <div>
-                                <div style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 600, marginBottom: '2px' }}>ערבויות</div>
-                                <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#4338ca' }}>{ils(guarantees)}</div>
-                                <div style={{ fontSize: '0.68rem', color: '#94a3b8' }}>מפרויקטים</div>
-                              </div>
-                            )}
-                          </div>
-                        )}
+                              {guarantees > 0 && (
+                                <div>
+                                  <div style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 600, marginBottom: '2px' }}>ערבויות</div>
+                                  <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#4338ca' }}>{ils(guarantees)}</div>
+                                  <div style={{ fontSize: '0.68rem', color: '#94a3b8' }}>מפרויקטים</div>
+                                </div>
+                              )}
+                            </div>
+                          )
+                        })()}
                       </div>
                     </div>
                   )

@@ -64,22 +64,22 @@ const mergeProjectWithDetails = (project) => {
     status: project.status || details.status || 'in-progress',
     developer: project.developer || details.developer || '',
     handler: project.handler || details.handler || '',
-    price: project.price || details.cli_contract || details.mfr_contract || '',
-    advance: project.advance || details.cli_paid || details.mfr_paid || '',
+    price: details.cli_contract || details.mfr_contract || project.price || '',
+    advance: details.cli_paid || details.mfr_paid || project.advance || '',
     updateDate: project.updateDate || details.updateDate || '',
     statusNote: project.statusNote || details.notes || '',
     manufacturer: project.manufacturer || details.manufacturer || '',
     client: project.client || details.client || '',
-    guarantees: project.guarantees || details.guarantees || '',
-    guarantees_end: project.guarantees_end || details.guarantees_end || '',
-    deposits: project.deposits || details.deposits || '',
-    deposits_station: project.deposits_station || details.deposits_station || '',
-    mfr_contract: project.mfr_contract || details.mfr_contract || '',
-    mfr_paid: project.mfr_paid || details.mfr_paid || '',
-    cli_contract: project.cli_contract || details.cli_contract || '',
-    cli_paid: project.cli_paid || details.cli_paid || '',
-    mfr_currency: project.mfr_currency || details.mfr_currency || '€',
-    cli_currency: project.cli_currency || details.cli_currency || '₪',
+    guarantees: details.guarantees || project.guarantees || '',
+    guarantees_end: details.guarantees_end || project.guarantees_end || '',
+    deposits: details.deposits || project.deposits || '',
+    deposits_station: details.deposits_station || project.deposits_station || '',
+    mfr_contract: details.mfr_contract || project.mfr_contract || '',
+    mfr_paid: details.mfr_paid || project.mfr_paid || '',
+    cli_contract: details.cli_contract || project.cli_contract || '',
+    cli_paid: details.cli_paid || project.cli_paid || '',
+    mfr_currency: details.mfr_currency || project.mfr_currency || '€',
+    cli_currency: details.cli_currency || project.cli_currency || '₪',
   }
 }
 
@@ -152,11 +152,21 @@ export default function ParkingProjectsEmbed({ tab }) {
   }
   const orderedProjects = visible.filter(p => ORDERED_AND_BEYOND.has(getCardStatus(p)))
 
+  const parkingLoansTotal = (() => {
+    try {
+      const raw = JSON.parse(localStorage.getItem('cashflow-loan-balances') || '{}')
+      return (raw['חניה אורבנית'] || []).reduce((s, l) => s + (toNum(l.amount) || 0), 0)
+    } catch { return 0 }
+  })()
+
   const suppliersByCur = {}
+  let suppliersILS = 0
   orderedProjects.forEach(p => {
     const cur = p.mfr_currency || '€'
     const unpaid = Math.max(0, toNum(p.mfr_contract) - toNum(p.mfr_paid))
     if (unpaid > 0) suppliersByCur[cur] = (suppliersByCur[cur] || 0) + unpaid
+    const rate = (() => { try { const d = JSON.parse(localStorage.getItem(`parking-project-${p.id}`) || '{}'); return toNum(d.mfr_rate) } catch { return 0 } })()
+    if (rate > 0 && unpaid > 0) suppliersILS += unpaid * rate
   })
   const clientsByCur = {}
   orderedProjects.forEach(p => {
@@ -337,73 +347,123 @@ export default function ParkingProjectsEmbed({ tab }) {
             </button>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px', marginBottom: '18px' }}>
-            {[
-              { id: 'guarantees', label: 'סה"כ ערבויות',            value: visible.reduce((sum, p) => sum + toNum(p.guarantees), 0), color: '#4338ca', bg: '#eef2ff' },
-              { id: 'deposits',   label: 'סה"כ פקדונות',             value: visible.reduce((sum, p) => sum + toNum(p.deposits), 0),   color: '#0f766e', bg: '#ecfeff' },
-              { id: 'suppliers',  label: 'מצב חשבון מול היצרן',     byCur: suppliersByCur,                                            color: '#1e3a8a', bg: '#eff6ff' },
-              { id: 'clients',    label: 'מצב חשבון מול הלקוח',     byCur: clientsByCur,                                              color: '#166534', bg: '#f0fdf4' },
-            ].map(card => (
-              <button key={card.id} type="button"
-                onClick={() => setDashboardSection(dashboardSection === card.id ? '' : card.id)}
-                style={{ border: `1px solid ${card.color}`, borderTop: `4px solid ${card.color}`, borderRadius: '14px', background: card.bg, padding: '18px 16px', textAlign: 'right', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: '10px', minHeight: '94px', transition: 'transform 0.1s' }}
-                onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
-                onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
-              >
-                <div style={{ fontSize: '12px', color: '#475569', fontWeight: '700' }}>{card.label}</div>
-                <div style={{ fontSize: '22px', fontWeight: '800', color: card.color, direction: 'ltr', textAlign: 'right' }}>
-                  {card.byCur
-                    ? Object.entries(card.byCur).length > 0
-                      ? Object.entries(card.byCur).map(([cur, amt]) => (
-                          <div key={cur}>{amt.toLocaleString('he-IL')} {cur}</div>
-                        ))
-                      : '—'
-                    : (card.value ? card.value.toLocaleString('he-IL') : '—')}
-                </div>
-                <div style={{ fontSize: '11px', color: '#64748b' }}>{dashboardSection === card.id ? 'הסתר פירוט' : 'הצג פירוט'}</div>
-              </button>
-            ))}
-          </div>
+          {(() => {
+            const totalDepositsNum   = visible.reduce((s, p) => s + toNum(p.deposits), 0)
+            const totalGuaranteesNum = visible.reduce((s, p) => s + toNum(p.guarantees), 0)
+            const clientsILS         = Object.values(clientsByCur).reduce((s, v) => s + v, 0)
+            const totalAssets        = totalDepositsNum + clientsILS
+            const totalLiabilities   = Math.round(suppliersILS) + parkingLoansTotal
+            const net                = totalAssets - totalLiabilities
+            const netPos             = net >= 0
 
-          {dashboardSection && (
-            <div style={{ marginBottom: '20px', padding: '16px', borderRadius: '16px', background: '#fff', border: '1px solid #e2e8f0' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-                <div style={{ fontSize: '15px', fontWeight: '700', color: '#1e293b' }}>
-                  {dashboardSection === 'guarantees' && 'פירוט ערבויות'}
-                  {dashboardSection === 'deposits' && 'פירוט פקדונות'}
-                  {dashboardSection === 'suppliers' && 'פירוט מצב חשבון מול היצרן'}
-                  {dashboardSection === 'clients' && 'פירוט מצב חשבון מול הלקוח'}
+            const GRN = '#0f766e'
+            const RED = '#b91c1c'
+
+            const col = (id, label, note, valueNode, color) => (
+              <button type="button"
+                onClick={() => id && setDashboardSection(dashboardSection === id ? '' : id)}
+                style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '2px', padding: '10px 14px', border: 'none', borderBottom: '1px solid #f1f5f9', background: dashboardSection === id ? `${color}10` : 'transparent', cursor: id ? 'pointer' : 'default', fontFamily: 'inherit', textAlign: 'right' }}>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+                  <span style={{ fontSize: '13px', color: '#475569', fontWeight: '600' }}>{label}</span>
+                  {note && <span style={{ fontSize: '12px', color: '#94a3b8' }}>{note}</span>}
                 </div>
-                <button type="button" onClick={() => setDashboardSection('')} style={{ border: 'none', background: '#f1f5f9', color: '#475569', padding: '8px 12px', borderRadius: '10px', cursor: 'pointer', fontSize: '12px' }}>סגור</button>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '8px' }}>
-                {dashboardSection === 'guarantees' && visible.filter(p => toNum(p.guarantees) > 0).map(p => (
-                  <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '9px 14px', borderRadius: '8px', background: '#f8fafc', border: '1px solid #e2e8f0' }}>
-                    <span style={{ fontSize: '13px', fontWeight: '600', color: '#1e293b' }}>{p.name}</span>
-                    <span style={{ fontSize: '13px', fontWeight: '700', color: '#4338ca', direction: 'ltr' }}>{fmtAmountLabel(p.guarantees)}</span>
+                <div style={{ direction: 'ltr', textAlign: 'right' }}>{valueNode}</div>
+              </button>
+            )
+
+            const amt = (v, color) => <span style={{ fontSize: '18px', fontWeight: '700', color, direction: 'ltr' }}>{v > 0 ? v.toLocaleString('he-IL') + ' ₪' : <span style={{ color: '#d1d5db', fontWeight: '400' }}>—</span>}</span>
+
+            return (
+              <>
+                <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '14px', overflow: 'hidden', marginBottom: '16px', boxShadow: '0 1px 6px rgba(0,0,0,0.05)' }}>
+
+                  {/* Header */}
+                  <div style={{ padding: '11px 16px', background: '#1e3a5f', color: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontWeight: '700', fontSize: '13px' }}>מצב כספי — חניה אורבנית</span>
+                    <span style={{ fontSize: '11px', opacity: 0.5 }}>{visible.length} פרויקטים</span>
                   </div>
-                ))}
-                {dashboardSection === 'deposits' && visible.filter(p => toNum(p.deposits) > 0).map(p => (
-                  <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '9px 14px', borderRadius: '8px', background: '#f8fafc', border: '1px solid #e2e8f0' }}>
-                    <span style={{ fontSize: '13px', fontWeight: '600', color: '#1e293b' }}>{p.name}</span>
-                    <span style={{ fontSize: '13px', fontWeight: '700', color: '#0f766e', direction: 'ltr' }}>{fmtAmountLabel(p.deposits)}</span>
+
+                  {/* Two columns */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
+
+                    {/* Left — assets */}
+                    <div style={{ borderLeft: '1px solid #f1f5f9' }}>
+                      {col('deposits', 'פקדונות',
+                        totalGuaranteesNum > 0 ? `ערבויות: ${totalGuaranteesNum.toLocaleString('he-IL')} ₪` : null,
+                        amt(totalDepositsNum, GRN), GRN)}
+                      {col('clients', 'חייבים מלקוחות', null,
+                        Object.entries(clientsByCur).length > 0
+                          ? Object.entries(clientsByCur).map(([cur, a]) => <div key={cur} style={{ fontSize: '18px', fontWeight: '700', color: GRN, direction: 'ltr' }}>{a.toLocaleString('he-IL')} {cur}</div>)
+                          : amt(0, GRN),
+                        GRN)}
+                      <div style={{ padding: '9px 14px', background: '#f9fafb', borderTop: '1px solid #e2e8f0' }}>
+                        <div style={{ fontSize: '11px', color: '#94a3b8', marginBottom: '1px' }}>סה"כ</div>
+                        <div style={{ fontSize: '19px', fontWeight: '800', color: '#374151', direction: 'ltr' }}>{totalAssets.toLocaleString('he-IL')} ₪</div>
+                      </div>
+                    </div>
+
+                    {/* Right — liabilities */}
+                    <div>
+                      {col('suppliers', 'חוב ליצרן', null,
+                        <div style={{ direction: 'ltr', textAlign: 'right' }}>
+                          {Object.entries(suppliersByCur).length > 0
+                            ? Object.entries(suppliersByCur).map(([cur, a]) => <div key={cur} style={{ fontSize: '22px', fontWeight: '700', color: RED }}>{a.toLocaleString('he-IL')} {cur}</div>)
+                            : <span style={{ fontSize: '22px', color: '#d1d5db' }}>—</span>}
+                          {suppliersILS > 0 && <div style={{ fontSize: '12px', color: '#94a3b8' }}>≈ {Math.round(suppliersILS).toLocaleString('he-IL')} ₪</div>}
+                        </div>, RED)}
+                      {col(null, 'הלוואות', null, amt(parkingLoansTotal, RED), RED)}
+                      <div style={{ padding: '9px 14px', background: '#f9fafb', borderTop: '1px solid #e2e8f0' }}>
+                        <div style={{ fontSize: '11px', color: '#94a3b8', marginBottom: '1px' }}>סה"כ</div>
+                        <div style={{ fontSize: '19px', fontWeight: '800', color: '#374151', direction: 'ltr' }}>{totalLiabilities.toLocaleString('he-IL')} ₪</div>
+                      </div>
+                    </div>
                   </div>
-                ))}
-                {dashboardSection === 'suppliers' && orderedProjects.filter(p => Math.max(0, toNum(p.mfr_contract) - toNum(p.mfr_paid)) > 0).map(p => (
-                  <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '9px 14px', borderRadius: '8px', background: '#f8fafc', border: '1px solid #e2e8f0' }}>
-                    <span style={{ fontSize: '13px', fontWeight: '600', color: '#1e293b' }}>{p.name}</span>
-                    <span style={{ fontSize: '13px', fontWeight: '700', color: '#1e3a8a', direction: 'ltr' }}>{fmtAmountLabel(toNum(p.mfr_contract) - toNum(p.mfr_paid), p.mfr_currency || '€')}</span>
+
+                  {/* Net */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '11px 16px', background: netPos ? '#f8fffe' : '#fff8f8', borderTop: '1px solid #e2e8f0' }}>
+                    <span style={{ fontSize: '12px', fontWeight: '600', color: '#64748b' }}>יתרה נטו</span>
+                    <span style={{ fontSize: '18px', fontWeight: '800', color: netPos ? GRN : RED, direction: 'ltr' }}>
+                      {netPos ? '+' : ''}{net.toLocaleString('he-IL')} ₪
+                    </span>
                   </div>
-                ))}
-                {dashboardSection === 'clients' && orderedProjects.filter(p => Math.max(0, toNum(p.cli_contract) - toNum(p.cli_paid)) > 0).map(p => (
-                  <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '9px 14px', borderRadius: '8px', background: '#f8fafc', border: '1px solid #e2e8f0' }}>
-                    <span style={{ fontSize: '13px', fontWeight: '600', color: '#1e293b' }}>{p.name}</span>
-                    <span style={{ fontSize: '13px', fontWeight: '700', color: '#166534', direction: 'ltr' }}>{fmtAmountLabel(toNum(p.cli_contract) - toNum(p.cli_paid), p.cli_currency || '₪')}</span>
+                </div>
+
+                {/* Detail panel */}
+                {dashboardSection && (
+                  <div style={{ marginBottom: '18px', padding: '14px 16px', borderRadius: '12px', background: '#fff', border: '1px solid #e2e8f0' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                      <span style={{ fontSize: '13px', fontWeight: '700', color: '#1e293b' }}>
+                        {dashboardSection === 'deposits'  && 'פירוט פקדונות'}
+                        {dashboardSection === 'suppliers' && 'פירוט חוב ליצרן'}
+                        {dashboardSection === 'clients'   && 'פירוט חייבים מלקוחות'}
+                      </span>
+                      <button type="button" onClick={() => setDashboardSection('')} style={{ border: 'none', background: '#f1f5f9', color: '#64748b', padding: '5px 10px', borderRadius: '6px', cursor: 'pointer', fontSize: '12px' }}>סגור</button>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      {dashboardSection === 'deposits' && visible.filter(p => toNum(p.deposits) > 0).map(p => (
+                        <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', borderRadius: '8px', background: '#f0fdf4', border: '1px solid #dcfce7' }}>
+                          <span style={{ fontSize: '13px', fontWeight: '600', color: '#1e293b' }}>{p.name}</span>
+                          <span style={{ fontSize: '13px', fontWeight: '700', color: '#15803d', direction: 'ltr' }}>{fmtAmountLabel(p.deposits)}</span>
+                        </div>
+                      ))}
+                      {dashboardSection === 'suppliers' && orderedProjects.filter(p => Math.max(0, toNum(p.mfr_contract) - toNum(p.mfr_paid)) > 0).map(p => (
+                        <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', borderRadius: '8px', background: '#fef2f2', border: '1px solid #fecaca' }}>
+                          <span style={{ fontSize: '13px', fontWeight: '600', color: '#1e293b' }}>{p.name}</span>
+                          <span style={{ fontSize: '13px', fontWeight: '700', color: '#dc2626', direction: 'ltr' }}>{fmtAmountLabel(toNum(p.mfr_contract) - toNum(p.mfr_paid), p.mfr_currency || '€')}</span>
+                        </div>
+                      ))}
+                      {dashboardSection === 'clients' && orderedProjects.filter(p => Math.max(0, toNum(p.cli_contract) - toNum(p.cli_paid)) > 0).map(p => (
+                        <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', borderRadius: '8px', background: '#f0fdf4', border: '1px solid #dcfce7' }}>
+                          <span style={{ fontSize: '13px', fontWeight: '600', color: '#1e293b' }}>{p.name}</span>
+                          <span style={{ fontSize: '13px', fontWeight: '700', color: '#15803d', direction: 'ltr' }}>{fmtAmountLabel(toNum(p.cli_contract) - toNum(p.cli_paid), p.cli_currency || '₪')}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                ))}
-              </div>
-            </div>
-          )}
+                )}
+              </>
+            )
+          })()}
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '28px 0 18px' }}>
             <div style={{ flex: 1, height: '1px', background: '#e2e8f0' }} />

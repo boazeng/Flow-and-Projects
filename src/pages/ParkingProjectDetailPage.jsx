@@ -92,7 +92,7 @@ const SectionTitle = ({ icon, title }) => (
   </div>
 )
 
-const AccountSection = ({ title, contractKey, paidKey, currency, currencyKey, note, data, update }) => {
+const AccountSection = ({ title, contractKey, paidKey, currency, currencyKey, exchangeRateKey, note, data, update }) => {
   const displayCurrency = currencyKey ? (data[currencyKey] || currency) : currency
   const contract  = toNum(data[contractKey])
   const paid      = toNum(data[paidKey])
@@ -100,6 +100,8 @@ const AccountSection = ({ title, contractKey, paidKey, currency, currencyKey, no
   const remColor  = remaining < 0 ? '#dc2626' : '#d97706'
   const remBg     = remaining < 0 ? '#fee2e2' : '#fef3c7'
   const remBorder = remaining < 0 ? '#fca5a5' : '#fcd34d'
+  const rate      = exchangeRateKey ? toNum(data[exchangeRateKey]) : 0
+  const hasRate   = rate > 0
   return (
     <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px', marginBottom: '12px', boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
       <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#1e3a5f', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
@@ -115,6 +117,17 @@ const AccountSection = ({ title, contractKey, paidKey, currency, currencyKey, no
         ) : (
           <span style={{ fontSize: '12px', color: '#64748b', fontWeight: 'normal' }}>({displayCurrency})</span>
         )}
+        {exchangeRateKey && (
+          <label style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', fontWeight: 'normal', color: '#64748b', marginRight: 'auto' }}>
+            שער {displayCurrency}:
+            <input type="text" inputMode="numeric"
+              value={data[exchangeRateKey] || ''}
+              onChange={e => update(exchangeRateKey, e.target.value.replace(/[^\d.]/g, ''))}
+              placeholder="0"
+              style={{ width: '70px', border: '1px solid #e2e8f0', borderRadius: '4px', padding: '1px 6px', fontSize: '12px', direction: 'ltr', textAlign: 'right', fontFamily: 'inherit', outline: 'none' }} />
+            <span>₪</span>
+          </label>
+        )}
         {note && <span style={{ fontSize: '12px', color: '#9ca3af', fontWeight: 'normal' }}>{note}</span>}
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
@@ -124,6 +137,11 @@ const AccountSection = ({ title, contractKey, paidKey, currency, currencyKey, no
             onChange={e => update(contractKey, e.target.value)}
             onBlur={e => update(contractKey, fmtAmount(e.target.value))}
             color="#1e3a5f" />
+          {hasRate && contract > 0 && (
+            <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px', direction: 'ltr', textAlign: 'right' }}>
+              ≈ {Math.round(contract * rate).toLocaleString('he-IL')} ₪
+            </div>
+          )}
         </div>
         <div style={{ padding: '12px', borderRadius: '8px', background: '#dcfce7', border: '1px solid #86efac', borderTop: '3px solid #16a34a' }}>
           <div style={fieldLabel}>סכום ששולם {displayCurrency}</div>
@@ -131,12 +149,22 @@ const AccountSection = ({ title, contractKey, paidKey, currency, currencyKey, no
             onChange={e => update(paidKey, e.target.value)}
             onBlur={e => update(paidKey, fmtAmount(e.target.value))}
             color="#16a34a" />
+          {hasRate && paid > 0 && (
+            <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px', direction: 'ltr', textAlign: 'right' }}>
+              ≈ {Math.round(paid * rate).toLocaleString('he-IL')} ₪
+            </div>
+          )}
         </div>
         <div style={{ padding: '12px', borderRadius: '8px', background: remBg, border: `1px solid ${remBorder}`, borderTop: `3px solid ${remColor}` }}>
           <div style={fieldLabel}>סכום שטרם שולם {displayCurrency}</div>
           <div style={{ fontSize: '20px', fontWeight: 'bold', color: remColor, textAlign: 'right', direction: 'ltr', marginTop: '6px' }}>
             {contract || paid ? fmtAmount(String(Math.abs(remaining))) : '—'}
           </div>
+          {hasRate && (contract || paid) && (
+            <div style={{ fontSize: '11px', color: remColor, marginTop: '4px', direction: 'ltr', textAlign: 'right', fontWeight: '600' }}>
+              ≈ {Math.round(Math.abs(remaining) * rate).toLocaleString('he-IL')} ₪
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -523,7 +551,7 @@ export default function ParkingProjectDetailPage() {
   return (
     <div className="ariel-page">
       <div className="container" style={{ maxWidth: '900px' }}>
-        <Link to="/" className="ariel-back print-hide">&rarr; חזרה לתזרים ופרויקטים</Link>
+        <Link to="/" state={{ tab: fromTab }} className="ariel-back print-hide">&rarr; חזרה לפרויקטים בביצוע</Link>
 
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px', marginBottom: '20px', marginTop: '8px' }}>
@@ -584,7 +612,7 @@ export default function ParkingProjectDetailPage() {
         {/* ─── כספים ─── */}
         <SectionTitle icon="💰" title="כספים" />
 
-        <AccountSection title="מצב חשבון מול היצרן" contractKey="mfr_contract" paidKey="mfr_paid" currency="€" currencyKey="mfr_currency" data={data} update={update} />
+        <AccountSection title="מצב חשבון מול היצרן" contractKey="mfr_contract" paidKey="mfr_paid" currency="€" currencyKey="mfr_currency" exchangeRateKey="mfr_rate" data={data} update={update} />
         <AccountSection title="מצב חשבון מול הלקוח" contractKey="cli_contract" paidKey="cli_paid" currency="₪" note='ללא מע"מ' data={data} update={update} />
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
