@@ -12,16 +12,16 @@ const PROJECT_STATUSES = [
 ]
 
 const INITIAL_PROJECTS = [
-  { id: 'danial',     name: 'דניאל',     status: 'quotes', code: 'UPT531', location: 'בת ים',    type: 'Permitmatic', spots: '30', percentage: '90', developer: '',       handler: '', price: '1,750,000', advance: '',        updateDate: '2026-06-02', statusNote: 'מחכים להתייחסות לקוח לחוזה' },
-  { id: 'bilo',       name: 'בילו',      status: 'quotes', code: 'UPT001', location: 'תל אביב',  type: 'Sales',       spots: '10', percentage: '90', developer: 'ריק',    handler: '', price: '2,000,000', advance: '200,000', updateDate: '2026-06-07', statusNote: 'נשלח לחתימה (במקדמה חלק בערבות)' },
-  { id: 'zota',       name: 'זוטא',      status: 'quotes', code: 'UPT021', location: 'ירושלים',  type: 'Room',        spots: '35', percentage: '50', developer: 'פיני',   handler: '', price: '6,630,000', advance: '',        updateDate: '2026-06-07', statusNote: 'פגישה בשבוע הבא' },
-  { id: 'yarkon-108', name: 'הירקון 108', status: 'quotes', code: 'UPT154', location: 'תל אביב', type: 'Permitmatic', spots: '22', percentage: '90', developer: 'קבוצה',  handler: '', price: '1,850,000', advance: '',        updateDate: '2026-06-08', statusNote: 'שלחנו הצעה לתשלום מקדמה עם ערבות - ממתינים ללקוח' },
-  { id: 'bloch',      name: 'בלוך',      status: 'quotes', code: '',       location: '',         type: 'Permitmatic', spots: '20', percentage: '90', developer: 'נרשא',   handler: '', price: '1,848,000', advance: '',        updateDate: '2026-06-07', statusNote: 'נשלח חוזה אחרון אחרי הערות לחתימה' },
-  { id: 'yarkon-28',  name: 'הירקון 28', status: 'quotes', code: 'UPT147', location: 'תל אביב',  type: 'Permitmatic', spots: '12', percentage: '90', developer: 'יוחנוף', handler: '', price: '1,900,000', advance: '',        updateDate: '2026-06-02', statusNote: 'נשלח חוזה מכר ללקוח' },
-  { id: 'hara',       name: 'הראה',      status: 'quotes', code: 'UPT178', location: 'רמת גן',   type: 'Permitmatic', spots: '28', percentage: '90', developer: 'זוארץ',  handler: '', price: '2,600,000', advance: '',        updateDate: '2026-06-07', statusNote: 'בעיית נגישות בתכנון' },
-  { id: 'rav-amial',  name: 'הרב עמיאל', status: 'quotes', code: 'UPT176', location: 'תל אביב',  type: 'Permitmatic', spots: '8',  percentage: '40', developer: 'פרטי',   handler: '', price: '2,085,000', advance: '',        updateDate: '2026-02-07', statusNote: 'שלחנו הסכם מכר עם התייחסות הלקוח, ממתינים לפגישה' },
-  { id: 'yahl',       name: 'יה"ל',     status: 'quotes', code: '',       location: '',         type: 'Permitmatic', spots: '5',  percentage: '100',developer: 'אלתן',   handler: '', price: '2,170,000', advance: '',        updateDate: '2026-06-02', statusNote: 'ממתינים להתייחסות לחוזה' },
-  { id: 'gorlo',      name: 'גורלו 11',  status: 'quotes', code: 'UPT207', location: 'תל אביב',  type: 'Permitmatic', spots: '10', percentage: '100',developer: '',       handler: '', price: '2,750,000', advance: '',        updateDate: '', statusNote: '' },
+  { id: 'upi831', name: 'דניאל 53-55, בת ים',       status: 'quotes', code: 'UPI831', location: 'בת ים',    type: 'Robot',      entranceType: 'Vertical cab.', developer: 'DY',      handler: '', spots: '35', percentage: '60',  price: '', advance: '', updateDate: '2026-02-09', statusNote: 'לא ניתן לקנות' },
+  { id: 'upi099', name: 'בילו 11, תל אביב',        status: 'quotes', code: 'UPI099', location: 'תל אביב', type: 'Parkmatrix', entranceType: 'Vertical cab.', developer: 'Parkday', handler: '', spots: '12', percentage: '90',  price: '', advance: '', updateDate: '2026-02-09', statusNote: 'חוזה / חתמנו' },
+  { id: 'upi061', name: 'הרצל / זוטא, ירושלים',   status: 'quotes', code: 'UPI061', location: 'ירושלים',  type: 'Parkmatrix', entranceType: 'Room',          developer: 'Parkday', handler: '', spots: '53', percentage: '90',  price: '', advance: '', updateDate: '2026-02-09', statusNote: 'שלם לחתמנו' },
+  { id: 'upi021', name: 'הירקון 108, תל אביב',     status: 'quotes', code: 'UPI021', location: 'תל אביב', type: 'Robot',      entranceType: 'Room',          developer: 'DY',      handler: '', spots: '22', percentage: '90',  price: '', advance: '', updateDate: '2026-06-30', statusNote: 'חוזה / לחתמנו' },
+  { id: 'upi856', name: 'בלוך 9',                  status: 'quotes', code: 'UPI856', location: '',         type: 'Robot',      entranceType: 'Horizontal',    developer: 'DY',      handler: '', spots: '20', percentage: '90',  price: '', advance: '', updateDate: '2026-02-16', statusNote: 'חוזה / לחתמנו' },
+  { id: 'upi147', name: 'הירקון 28, תל אביב',      status: 'quotes', code: 'UPI147', location: 'תל אביב', type: 'Parkmatrix', entranceType: 'Vertical cab.', developer: 'Parkday', handler: '', spots: '12', percentage: '50',  price: '', advance: '', updateDate: '2026-03-29', statusNote: '' },
+  { id: 'upi136', name: 'הראה 136, רמת גן',        status: 'quotes', code: 'UPI136', location: 'רמת גן',  type: 'Parkmatrix', entranceType: 'Vertical cab.', developer: 'Parkday', handler: '', spots: '26', percentage: '90',  price: '', advance: '', updateDate: '2026-03-09', statusNote: 'עבודות על חשבון' },
+  { id: 'upi078', name: 'הרב עמיאל 24-26, תל אביב', status: 'quotes', code: 'UPI078', location: 'תל אביב', type: 'Parkmatrix', entranceType: 'Vertical cab.', developer: 'Parkday', handler: '', spots: '6',  percentage: '60',  price: '', advance: '', updateDate: '2026-02-10', statusNote: 'חתמנו' },
+  { id: 'upi187', name: 'יהל 5, תל אביב',          status: 'quotes', code: 'UPI187', location: 'תל אביב', type: 'Parkmatrix', entranceType: 'Vertical cab.', developer: 'Parkday', handler: '', spots: '14', percentage: '60',  price: '', advance: '', updateDate: '2026-03-09', statusNote: '' },
+  { id: 'upi207', name: 'גורלו 11, תל אביב',       status: 'quotes', code: 'UPI207', location: 'תל אביב', type: 'Parkmatrix', entranceType: 'Vertical cab.', developer: 'Parkday', handler: '', spots: '10', percentage: '100', price: '', advance: '', updateDate: '2026-03-09', statusNote: '' },
   { id: 'pnkas-24',       name: 'פנקס 24',               status: 'in-progress', developer: '', price: '', advance: '', updateDate: '', statusNote: '' },
   { id: 'nahariya',       name: 'נהריה',                 status: 'in-progress', developer: '', price: '', advance: '', updateDate: '', statusNote: '' },
   { id: 'ein-hakore',     name: 'עין הקורא',             status: 'in-progress', developer: '', price: '', advance: '', updateDate: '', statusNote: '' },
@@ -82,11 +82,12 @@ const mergeProjectWithDetails = (project) => {
     cli_paid: details.cli_paid || project.cli_paid || '',
     mfr_currency: details.mfr_currency || project.mfr_currency || '€',
     cli_currency: details.cli_currency || project.cli_currency || '₪',
-    code:       project.code       ?? initial?.code       ?? '',
-    location:   project.location   ?? initial?.location   ?? '',
-    type:       project.type       ?? initial?.type       ?? '',
-    spots:      project.spots      ?? initial?.spots      ?? '',
-    percentage: project.percentage ?? initial?.percentage ?? '',
+    code:        project.code        ?? initial?.code        ?? '',
+    location:    project.location    ?? initial?.location    ?? '',
+    type:        project.type        ?? initial?.type        ?? '',
+    entranceType: project.entranceType ?? initial?.entranceType ?? '',
+    spots:       project.spots       ?? initial?.spots       ?? '',
+    percentage:  project.percentage  ?? initial?.percentage  ?? '',
   }
 }
 
@@ -109,11 +110,17 @@ const recoverProjectsFromDetails = () => {
 
 const load = () => {
   const stored = loadProjectListFromStorage()
+  const quotesInitial = INITIAL_PROJECTS.filter(p => p.status === 'quotes')
   if (stored && stored.length > 0) {
-    const merged   = stored.map(mergeProjectWithDetails)
-    const storedIds = new Set(stored.map(p => p.id))
-    const newOnes  = INITIAL_PROJECTS.filter(p => !storedIds.has(p.id))
-    return [...merged, ...newOnes]
+    const storedInProgress = stored.filter(p => p.status === 'in-progress').map(mergeProjectWithDetails)
+    const storedIds = new Set(storedInProgress.map(p => p.id))
+    const newInProgress = INITIAL_PROJECTS.filter(p => p.status === 'in-progress' && !storedIds.has(p.id))
+    // Use stored quotes only if they are already the new UPI format
+    const storedQuotes = stored.filter(p => p.status === 'quotes')
+    const quotes = storedQuotes.some(p => p.id.startsWith('upi'))
+      ? storedQuotes.map(mergeProjectWithDetails)
+      : quotesInitial
+    return [...storedInProgress, ...newInProgress, ...quotes]
   }
   const fromDetails = recoverProjectsFromDetails()
   return fromDetails.length > 0 ? fromDetails : INITIAL_PROJECTS
@@ -408,11 +415,13 @@ export default function ParkingProjectsEmbed({ tab }) {
         const totalAdvances  = visible.reduce((s, p) => s + toNum(p.advance), 0)
         const withAdvance    = visible.filter(p => toNum(p.advance) > 0).length
         const totalSpots     = visible.reduce((s, p) => s + (parseInt(p.spots) || 0), 0)
-        const COLS           = '1.9fr 0.6fr 0.55fr 0.45fr 1fr 0.85fr 0.75fr 1.9fr 22px'
+        const COLS           = '1.6fr 0.5fr 0.5fr 0.6fr 0.38fr 0.4fr 0.9fr 0.78fr 0.65fr 1.5fr 22px'
         const now            = Date.now()
         const msPerDay       = 86400 * 1000
 
         const TYPE_STYLE = {
+          'Parkmatrix':  { bg: '#dcfce7', color: '#15803d' },
+          'Robot':       { bg: '#fee2e2', color: '#dc2626' },
           'Permitmatic': { bg: '#dcfce7', color: '#15803d' },
           'Sales':       { bg: '#dbeafe', color: '#1d4ed8' },
           'Room':        { bg: '#ede9fe', color: '#7c3aed' },
@@ -422,7 +431,7 @@ export default function ParkingProjectsEmbed({ tab }) {
           const totalPr = visible.reduce((s, p) => s + toNum(p.price), 0)
           const totalAd = visible.reduce((s, p) => s + toNum(p.advance), 0)
           const totSp   = visible.reduce((s, p) => s + (parseInt(p.spots) || 0), 0)
-          const typeClr = { Permitmatic: '#15803d', Sales: '#1d4ed8', Room: '#7c3aed' }
+          const typeClr = { Parkmatrix: '#15803d', Robot: '#dc2626', Permitmatic: '#15803d', Sales: '#1d4ed8', Room: '#7c3aed' }
           const rows = visible.map((p, i) => {
             const hasAdv = toNum(p.advance) > 0
             const tc = typeClr[p.type] || '#475569'
@@ -433,7 +442,9 @@ export default function ParkingProjectsEmbed({ tab }) {
               </td>
               <td style="padding:9px 10px;border-bottom:1px solid #e5e7eb;color:#6b7280;">${p.developer || '—'}</td>
               <td style="padding:9px 10px;border-bottom:1px solid #e5e7eb;"><span style="font-size:11px;font-weight:700;color:${tc};">${p.type || '—'}</span></td>
+              <td style="padding:9px 10px;border-bottom:1px solid #e5e7eb;color:#475569;font-size:11px;">${p.entranceType || '—'}</td>
               <td style="padding:9px 10px;border-bottom:1px solid #e5e7eb;text-align:center;font-weight:700;">${p.spots || '—'}</td>
+              <td style="padding:9px 10px;border-bottom:1px solid #e5e7eb;text-align:center;font-weight:700;color:#7c3aed;">${p.percentage ? p.percentage + '%' : '—'}</td>
               <td style="padding:9px 10px;border-bottom:1px solid #e5e7eb;direction:ltr;text-align:right;color:#15803d;font-weight:700;">${p.price || '—'}</td>
               <td style="padding:9px 10px;border-bottom:1px solid #e5e7eb;direction:ltr;text-align:right;color:${hasAdv ? '#0369a1' : '#94a3b8'};font-weight:${hasAdv ? '700' : '400'};">${p.advance || '—'}</td>
               <td style="padding:9px 10px;border-bottom:1px solid #e5e7eb;text-align:center;white-space:nowrap;">${p.updateDate ? fmtDate(p.updateDate) : '—'}</td>
@@ -451,16 +462,17 @@ export default function ParkingProjectsEmbed({ tab }) {
             <h1>פרויקטים במשא ומתן — חניה</h1>
             <div class="sub">הודפס: ${new Date().toLocaleDateString('he-IL')} · ${visible.length} פרויקטים</div>
             <div class="kpi">
-              <div class="kpi-box"><div class="kpi-label">שווי פייפליין</div><div class="kpi-val" style="color:#1e3a5f;direction:ltr;text-align:right;">${totalPr.toLocaleString('he-IL')} ₪</div></div>
-              <div class="kpi-box"><div class="kpi-label">מקדמות שנגבו</div><div class="kpi-val" style="color:#0369a1;direction:ltr;text-align:right;">${totalAd.toLocaleString('he-IL')} ₪</div></div>
+              <div class="kpi-box"><div class="kpi-label">שווי פייפליין</div><div class="kpi-val" style="color:#1e3a5f;direction:ltr;text-align:right;">${totalPr > 0 ? totalPr.toLocaleString('he-IL') + ' ₪' : '—'}</div></div>
+              <div class="kpi-box"><div class="kpi-label">מקדמות שנגבו</div><div class="kpi-val" style="color:#0369a1;direction:ltr;text-align:right;">${totalAd > 0 ? totalAd.toLocaleString('he-IL') + ' ₪' : '—'}</div></div>
               <div class="kpi-box"><div class="kpi-label">סה"כ מקומות</div><div class="kpi-val" style="color:#7c3aed;">${totSp}</div></div>
             </div>
-            <table><thead><tr><th>פרויקט</th><th>יזם</th><th>סוג</th><th style="text-align:center;">מ'</th><th style="direction:ltr;text-align:right;">מחיר ₪</th>
+            <table><thead><tr><th>פרויקט</th><th>יזם</th><th>סוג</th><th>כניסה</th><th style="text-align:center;">מ'</th><th style="text-align:center;">%</th><th style="direction:ltr;text-align:right;">מחיר ₪</th>
             <th style="direction:ltr;text-align:right;">מקדמה ₪</th><th style="text-align:center;">עדכון</th><th>סטטוס / הערה</th></tr></thead>
             <tbody>${rows}</tbody>
-            <tfoot><tr><td colspan="3">סה"כ</td>
+            <tfoot><tr><td colspan="4">סה"כ</td>
               <td style="text-align:center;">${totSp}</td>
-              <td style="direction:ltr;text-align:right;color:#15803d;">${totalPr.toLocaleString('he-IL')} ₪</td>
+              <td></td>
+              <td style="direction:ltr;text-align:right;color:#15803d;">${totalPr > 0 ? totalPr.toLocaleString('he-IL') + ' ₪' : '—'}</td>
               <td style="direction:ltr;text-align:right;color:#0369a1;">${totalAd > 0 ? totalAd.toLocaleString('he-IL') + ' ₪' : '—'}</td>
               <td colspan="2"></td></tr></tfoot>
             </table></body></html>`
@@ -471,20 +483,6 @@ export default function ParkingProjectsEmbed({ tab }) {
 
         return (
           <>
-            {/* KPI summary cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '22px', direction: 'rtl' }}>
-              {[
-                { label: 'שווי פייפליין כולל', value: `${totalPipeline.toLocaleString('he-IL')} ₪`, color: '#1e3a5f', bg: '#eff6ff', border: '#bfdbfe' },
-                { label: 'מקדמות שנגבו',       value: totalAdvances > 0 ? `${totalAdvances.toLocaleString('he-IL')} ₪` : '—',  color: '#0369a1', bg: '#f0f9ff', border: '#bae6fd' },
-                { label: 'פרויקטים במשא ומתן', value: `${visible.length} פרויקטים · ${totalSpots} מקומות`, color: '#7c3aed', bg: '#faf5ff', border: '#e9d5ff' },
-              ].map(({ label, value, color, bg, border }) => (
-                <div key={label} style={{ background: bg, border: `1px solid ${border}`, borderRadius: '14px', padding: '16px 20px' }}>
-                  <div style={{ fontSize: '11px', color: '#64748b', fontWeight: '600', marginBottom: '8px', letterSpacing: '0.04em' }}>{label}</div>
-                  <div style={{ fontSize: '20px', fontWeight: '800', color, direction: 'ltr', textAlign: 'right' }}>{value}</div>
-                </div>
-              ))}
-            </div>
-
             {/* Top bar */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
               <span style={{ fontSize: '12px', color: '#94a3b8' }}>{visible.length} פרויקטים</span>
@@ -495,7 +493,7 @@ export default function ParkingProjectsEmbed({ tab }) {
 
             {/* Table header */}
             <div style={{ display: 'grid', gridTemplateColumns: COLS, gap: '0 10px', padding: '10px 18px', background: '#1e3a5f', borderRadius: '10px 10px 0 0', direction: 'rtl' }}>
-              {['פרויקט', 'יזם', 'סוג', 'מ\'', 'מחיר ₪', 'מקדמה ₪', 'עדכון', 'סטטוס / הערה', ''].map(h => (
+              {['פרויקט', 'יזם', 'סוג', 'כניסה', 'מ\'', '%', 'מחיר ₪', 'מקדמה ₪', 'עדכון', 'סטטוס / הערה', ''].map(h => (
                 <div key={h} style={{ fontSize: '11px', color: '#93c5fd', fontWeight: '700', letterSpacing: '0.04em' }}>{h}</div>
               ))}
             </div>
@@ -540,16 +538,32 @@ export default function ParkingProjectsEmbed({ tab }) {
                       <select value={p.type || ''} onChange={e => update(p.id, 'type', e.target.value)}
                         style={{ border: 'none', background: typeStyle.bg, color: typeStyle.color, fontWeight: '700', fontSize: '11px', borderRadius: '999px', padding: '3px 8px', cursor: 'pointer', fontFamily: 'inherit', outline: 'none', width: '100%' }}>
                         <option value="">—</option>
+                        <option value="Parkmatrix">Parkmatrix</option>
+                        <option value="Robot">Robot</option>
                         <option value="Permitmatic">Permitmatic</option>
                         <option value="Sales">Sales</option>
                         <option value="Room">Room</option>
                       </select>
                     </div>
 
+                    {/* כניסה — entrance type */}
+                    <select value={p.entranceType || ''} onChange={e => update(p.id, 'entranceType', e.target.value)}
+                      style={{ border: 'none', background: '#f8fafc', color: '#475569', fontWeight: '600', fontSize: '11px', borderRadius: '6px', padding: '3px 6px', cursor: 'pointer', fontFamily: 'inherit', outline: 'none', width: '100%' }}>
+                      <option value="">—</option>
+                      <option value="Vertical cab.">Vertical cab.</option>
+                      <option value="Room">Room</option>
+                      <option value="Horizontal">Horizontal</option>
+                    </select>
+
                     {/* מקומות */}
                     <input value={p.spots || ''} onChange={e => update(p.id, 'spots', e.target.value)}
                       placeholder="—" type="number" min="0"
                       style={{ ...cardInput, fontSize: '13px', fontWeight: '700', color: '#374151', textAlign: 'center', width: '100%' }} />
+
+                    {/* % */}
+                    <input value={p.percentage || ''} onChange={e => update(p.id, 'percentage', e.target.value)}
+                      placeholder="%" type="number" min="0" max="100"
+                      style={{ ...cardInput, fontSize: '12px', fontWeight: '700', color: '#7c3aed', textAlign: 'center', width: '100%' }} />
 
                     {/* מחיר */}
                     <input value={p.price} onChange={e => update(p.id, 'price', e.target.value)}
@@ -594,10 +608,11 @@ export default function ParkingProjectsEmbed({ tab }) {
               {visible.length > 0 && (
                 <div style={{ display: 'grid', gridTemplateColumns: COLS, gap: '0 10px', padding: '10px 18px', background: '#f8fafc', borderTop: '2px solid #e2e8f0', direction: 'rtl' }}>
                   <div style={{ fontSize: '12px', fontWeight: '700', color: '#475569' }}>סה"כ</div>
-                  <div /><div />
+                  <div /><div /><div />
                   <div style={{ fontSize: '13px', fontWeight: '800', color: '#374151', textAlign: 'center' }}>{totalSpots}</div>
+                  <div />
                   <div style={{ fontSize: '14px', fontWeight: '800', color: '#15803d', direction: 'ltr', textAlign: 'right' }}>
-                    {totalPipeline.toLocaleString('he-IL')} ₪
+                    {totalPipeline > 0 ? `${totalPipeline.toLocaleString('he-IL')} ₪` : '—'}
                   </div>
                   <div style={{ fontSize: '13px', fontWeight: '700', color: '#0369a1', direction: 'ltr', textAlign: 'right' }}>
                     {totalAdvances > 0 ? `${totalAdvances.toLocaleString('he-IL')} ₪` : '—'}

@@ -1,5 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import {
+  ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
+  ResponsiveContainer, PieChart, Pie, Cell, BarChart,
+} from 'recharts'
 import EditableTable from '../components/EditableTable'
 import ParkingProjectsEmbed from './ParkingProjectsEmbed'
 import TactLogo from '../components/TactLogo'
@@ -150,6 +154,14 @@ function loadProjectCashflows() {
 
 const ils = (n) =>
   '₪' + Number(n || 0).toLocaleString('he-IL', { maximumFractionDigits: 0 })
+
+const fmtK = (v) => {
+  const abs = Math.abs(v)
+  const sign = v < 0 ? '-' : ''
+  if (abs >= 1000000) return sign + '₪' + (abs / 1000000).toFixed(1) + 'M'
+  if (abs >= 1000) return sign + '₪' + (abs / 1000).toFixed(0) + 'K'
+  return sign + '₪' + abs
+}
 
 function loadParkingByCompany(field) {
   try {
@@ -382,6 +394,13 @@ export default function CashflowPage() {
     ...projectMonth(filteredExpectedItems, ym, bdYM && ym === bdYM ? bdDay : 0),
   }))
 
+  const cashflowChartData = monthlyData.map(({ ym, income, expense }, idx) => ({
+    month: fmtYM(ym),
+    הכנסות: income,
+    הוצאות: expense,
+    יתרה: startingBalance + monthlyData.slice(0, idx + 1).reduce((s, d) => s + d.net, 0),
+  }))
+
   const backupInputRef = useRef(null)
 
   const handleBackup = () => {
@@ -588,14 +607,16 @@ export default function CashflowPage() {
                                       <span style={{ direction: 'ltr', fontWeight: 600, color: '#0f766e' }}>{ils(deposits)}</span>
                                     </div>
                                   )}
-                                  <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.82rem', color: '#475569' }}>
-                                    <span>פקדון בגין ערבות לשכירות החרש 15</span>
-                                    <input type="text"
-                                      value={rentalDep ? Number(rentalDep).toLocaleString('he-IL', { maximumFractionDigits: 0 }) : ''}
-                                      placeholder="סכום ₪"
-                                      onChange={(e) => { const n = Number(e.target.value.replace(/[^\d.-]/g, '')) || 0; setRentalDeposits((prev) => ({ ...prev, [company]: n })) }}
-                                      style={{ width: '110px', border: '1px solid #e2e8f0', borderRadius: '4px', padding: '3px 8px', direction: 'ltr', fontSize: '0.82rem', textAlign: 'right' }} />
-                                  </label>
+                                  {company === 'חניה אורבנית' && (
+                                    <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.82rem', color: '#475569' }}>
+                                      <span>פקדון בגין ערבות לשכירות החרש 15</span>
+                                      <input type="text"
+                                        value={rentalDep ? Number(rentalDep).toLocaleString('he-IL', { maximumFractionDigits: 0 }) : ''}
+                                        placeholder="סכום ₪"
+                                        onChange={(e) => { const n = Number(e.target.value.replace(/[^\d.-]/g, '')) || 0; setRentalDeposits((prev) => ({ ...prev, [company]: n })) }}
+                                        style={{ width: '110px', border: '1px solid #e2e8f0', borderRadius: '4px', padding: '3px 8px', direction: 'ltr', fontSize: '0.82rem', textAlign: 'right' }} />
+                                    </label>
+                                  )}
                                   {deposits > 0 && rentalDep > 0 && (
                                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', fontWeight: 700, color: '#0f766e', borderTop: '1px solid #e2e8f0', paddingTop: '0.35rem', marginTop: '0.1rem' }}>
                                       <span>סה"כ פקדונות</span>
@@ -663,6 +684,27 @@ export default function CashflowPage() {
                 </label>
               </div>
             </div>
+
+            {forecastView === 'monthly' && (
+              <div className="cf-card" style={{ marginBottom: '1.25rem', padding: '0.75rem 0.25rem 0.5rem' }}>
+                <div style={{ padding: '0 1rem 0.5rem', fontWeight: 700, fontSize: '0.95rem', color: '#1e40af' }}>
+                  גרף תזרים — 12 חודשים
+                </div>
+                <ResponsiveContainer width="100%" height={290}>
+                  <ComposedChart data={cashflowChartData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                    <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#64748b' }} />
+                    <YAxis yAxisId="amounts" orientation="right" tickFormatter={fmtK} tick={{ fontSize: 11, fill: '#64748b' }} width={72} />
+                    <YAxis yAxisId="balance" orientation="left" tickFormatter={fmtK} tick={{ fontSize: 11, fill: '#64748b' }} width={72} />
+                    <Tooltip formatter={(value, name) => [ils(value), name]} contentStyle={{ fontFamily: 'inherit', fontSize: '0.82rem', direction: 'rtl' }} />
+                    <Legend wrapperStyle={{ fontSize: '0.82rem', paddingTop: '6px' }} />
+                    <Bar yAxisId="amounts" dataKey="הכנסות" fill="#22c55e" opacity={0.85} radius={[3, 3, 0, 0]} />
+                    <Bar yAxisId="amounts" dataKey="הוצאות" fill="#f87171" opacity={0.85} radius={[3, 3, 0, 0]} />
+                    <Line yAxisId="balance" type="monotone" dataKey="יתרה" stroke="#0369a1" strokeWidth={2.5} dot={{ r: 3, fill: '#0369a1' }} />
+                  </ComposedChart>
+                </ResponsiveContainer>
+              </div>
+            )}
 
             <div className="cf-card" style={{ marginBottom: '1.5rem' }}>
               <div style={{ padding: '0.75rem 1rem', fontWeight: 700, fontSize: '1rem', color: '#1e40af', borderBottom: '1px solid #f1f5f9' }}>
@@ -966,6 +1008,20 @@ export default function CashflowPage() {
           const fixedItems = expectedItems.filter((i) => i.overhead)
           const grandMonthlyExp = fixedItems.filter((i) => i.type === 'expense').reduce((s, i) => s + monthlyEquiv(i), 0)
 
+          const PIE_COLORS = ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#14b8a6','#f97316','#ec4899','#6366f1','#84cc16']
+          const catMap = {}
+          fixedItems.filter(i => i.type === 'expense').forEach(item => {
+            const cat = item.category || 'שונות'
+            catMap[cat] = (catMap[cat] || 0) + monthlyEquiv(item)
+          })
+          const overheadPieData = Object.entries(catMap)
+            .map(([name, value]) => ({ name, value: Math.round(value) }))
+            .sort((a, b) => b.value - a.value)
+          const overheadBarData = COMPANY_LIST.map(company => ({
+            name: company.split(' ')[0],
+            value: Math.round(fixedItems.filter(i => i.company === company && i.type === 'expense').reduce((s, i) => s + monthlyEquiv(i), 0)),
+          })).filter(d => d.value > 0)
+
           return (
             <div>
               <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
@@ -979,6 +1035,36 @@ export default function CashflowPage() {
                   </div>
                 ))}
               </div>
+
+              {overheadPieData.length > 0 && (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+                  <div className="cf-card" style={{ padding: '0.75rem 0.25rem 0.5rem' }}>
+                    <div style={{ padding: '0 1rem 0.5rem', fontWeight: 700, fontSize: '0.95rem', color: '#dc2626' }}>פילוח תקורות לפי קטגוריה</div>
+                    <ResponsiveContainer width="100%" height={250}>
+                      <PieChart>
+                        <Pie data={overheadPieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={95}
+                          label={({ percent }) => percent > 0.05 ? `${(percent * 100).toFixed(0)}%` : ''} labelLine={false}>
+                          {overheadPieData.map((_, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
+                        </Pie>
+                        <Tooltip formatter={(v, name) => [ils(v), name]} contentStyle={{ fontFamily: 'inherit', fontSize: '0.82rem', direction: 'rtl' }} />
+                        <Legend wrapperStyle={{ fontSize: '0.75rem' }} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <div className="cf-card" style={{ padding: '0.75rem 0.25rem 0.5rem' }}>
+                    <div style={{ padding: '0 1rem 0.5rem', fontWeight: 700, fontSize: '0.95rem', color: '#dc2626' }}>תקורות חודשיות לפי חברה</div>
+                    <ResponsiveContainer width="100%" height={250}>
+                      <BarChart data={overheadBarData} layout="vertical" margin={{ top: 10, right: 40, left: 10, bottom: 10 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" horizontal={false} />
+                        <XAxis type="number" tickFormatter={fmtK} tick={{ fontSize: 11, fill: '#64748b' }} />
+                        <YAxis type="category" dataKey="name" tick={{ fontSize: 13, fill: '#475569' }} width={55} />
+                        <Tooltip formatter={(v) => [ils(v), 'הוצאה חודשית']} contentStyle={{ fontFamily: 'inherit', fontSize: '0.82rem', direction: 'rtl' }} />
+                        <Bar dataKey="value" fill="#f87171" radius={[0, 4, 4, 0]} name="הוצאה חודשית" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              )}
 
               <div style={{ display: 'grid', gap: '0.9rem', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', marginBottom: '1rem' }}>
                 {COMPANY_LIST.map((company) => {
