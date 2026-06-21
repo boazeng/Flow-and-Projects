@@ -685,26 +685,24 @@ export default function CashflowPage() {
               </div>
             </div>
 
-            {forecastView === 'monthly' && (
-              <div className="cf-card" style={{ marginBottom: '1.25rem', padding: '0.75rem 0.25rem 0.5rem' }}>
-                <div style={{ padding: '0 1rem 0.5rem', fontWeight: 700, fontSize: '0.95rem', color: '#1e40af' }}>
-                  גרף תזרים — 12 חודשים
-                </div>
-                <ResponsiveContainer width="100%" height={290}>
-                  <ComposedChart data={cashflowChartData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                    <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#64748b' }} />
-                    <YAxis yAxisId="amounts" orientation="right" tickFormatter={fmtK} tick={{ fontSize: 11, fill: '#64748b' }} width={72} />
-                    <YAxis yAxisId="balance" orientation="left" tickFormatter={fmtK} tick={{ fontSize: 11, fill: '#64748b' }} width={72} />
-                    <Tooltip formatter={(value, name) => [ils(value), name]} contentStyle={{ fontFamily: 'inherit', fontSize: '0.82rem', direction: 'rtl' }} />
-                    <Legend wrapperStyle={{ fontSize: '0.82rem', paddingTop: '6px' }} />
-                    <Bar yAxisId="amounts" dataKey="הכנסות" fill="#22c55e" opacity={0.85} radius={[3, 3, 0, 0]} />
-                    <Bar yAxisId="amounts" dataKey="הוצאות" fill="#f87171" opacity={0.85} radius={[3, 3, 0, 0]} />
-                    <Line yAxisId="balance" type="monotone" dataKey="יתרה" stroke="#0369a1" strokeWidth={2.5} dot={{ r: 3, fill: '#0369a1' }} />
-                  </ComposedChart>
-                </ResponsiveContainer>
+            <div className="cf-card" style={{ marginBottom: '1.25rem', padding: '0.75rem 0.25rem 0.5rem' }}>
+              <div style={{ padding: '0 1rem 0.5rem', fontWeight: 700, fontSize: '0.95rem', color: '#1e40af' }}>
+                גרף תזרים — 12 חודשים
               </div>
-            )}
+              <ResponsiveContainer width="100%" height={290}>
+                <ComposedChart data={cashflowChartData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                  <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#64748b' }} />
+                  <YAxis yAxisId="amounts" orientation="right" tickFormatter={fmtK} tick={{ fontSize: 11, fill: '#64748b' }} width={72} />
+                  <YAxis yAxisId="balance" orientation="left" tickFormatter={fmtK} tick={{ fontSize: 11, fill: '#64748b' }} width={72} />
+                  <Tooltip formatter={(value, name) => [ils(value), name]} contentStyle={{ fontFamily: 'inherit', fontSize: '0.82rem', direction: 'rtl' }} />
+                  <Legend wrapperStyle={{ fontSize: '0.82rem', paddingTop: '6px' }} />
+                  <Bar yAxisId="amounts" dataKey="הכנסות" fill="#22c55e" opacity={0.85} radius={[3, 3, 0, 0]} />
+                  <Bar yAxisId="amounts" dataKey="הוצאות" fill="#f87171" opacity={0.85} radius={[3, 3, 0, 0]} />
+                  <Line yAxisId="balance" type="monotone" dataKey="יתרה" stroke="#0369a1" strokeWidth={2.5} dot={{ r: 3, fill: '#0369a1' }} />
+                </ComposedChart>
+              </ResponsiveContainer>
+            </div>
 
             <div className="cf-card" style={{ marginBottom: '1.5rem' }}>
               <div style={{ padding: '0.75rem 1rem', fontWeight: 700, fontSize: '1rem', color: '#1e40af', borderBottom: '1px solid #f1f5f9' }}>
@@ -1036,8 +1034,7 @@ export default function CashflowPage() {
                 ))}
               </div>
 
-              {overheadPieData.length > 0 && (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
                   <div className="cf-card" style={{ padding: '0.75rem 0.25rem 0.5rem' }}>
                     <div style={{ padding: '0 1rem 0.5rem', fontWeight: 700, fontSize: '0.95rem', color: '#dc2626' }}>פילוח תקורות לפי קטגוריה</div>
                     <ResponsiveContainer width="100%" height={250}>
@@ -1064,7 +1061,6 @@ export default function CashflowPage() {
                     </ResponsiveContainer>
                   </div>
                 </div>
-              )}
 
               <div style={{ display: 'grid', gap: '0.9rem', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', marginBottom: '1rem' }}>
                 {COMPANY_LIST.map((company) => {
