@@ -119,9 +119,129 @@ const load = () => {
   return fromDetails.length > 0 ? fromDetails : INITIAL_PROJECTS
 }
 
+const MONTH_HE   = ['ינו׳','פבר׳','מרץ','אפר׳','מאי','יוני','יולי','אוג׳','ספט׳','אוק׳','נוב׳','דצמ׳']
+const GANTT_CLR  = { signed:'#475569', advance:'#0369a1', ordered:'#4338ca', arrived:'#b45309', install:'#0f766e', done:'#15803d' }
+
+function GanttChart({ projects }) {
+  const MONTH_W  = 88
+  const ROW_H    = 46
+  const NAME_W   = 148
+  const HDR_H    = 42
+
+  const rows = projects.map(p => {
+    let milestones = [], cardStatus = p.cardStatus || 'advance'
+    try {
+      const raw = localStorage.getItem(`parking-project-${p.id}`)
+      if (raw) { const d = JSON.parse(raw); milestones = (d.milestones || []).filter(m => m.date); if (d.cardStatus) cardStatus = d.cardStatus }
+    } catch {}
+    return { id: p.id, name: p.name, milestones, cardStatus }
+  }).filter(r => r.milestones.length > 0)
+
+  if (rows.length === 0)
+    return <div style={{ padding: '24px', textAlign: 'center', color: '#94a3b8', fontSize: '13px', direction: 'rtl' }}>אין אבני דרך עם תאריכים — פתח פרויקט והוסף תאריכים.</div>
+
+  const allTs = rows.flatMap(r => r.milestones.map(m => new Date(m.date).getTime()))
+  const minD  = new Date(Math.min(...allTs)); minD.setDate(1); minD.setMonth(minD.getMonth() - 1)
+  const maxD  = new Date(Math.max(...allTs)); maxD.setDate(1); maxD.setMonth(maxD.getMonth() + 2)
+
+  const months = []
+  const cur = new Date(minD)
+  while (cur < maxD) { months.push(new Date(cur)); cur.setMonth(cur.getMonth() + 1) }
+
+  const totalW  = months.length * MONTH_W
+  const svgH    = HDR_H + rows.length * ROW_H + 4
+  const toX     = (ds) => ((new Date(ds).getTime() - minD.getTime()) / (maxD.getTime() - minD.getTime())) * totalW
+  const todayX  = toX(new Date().toISOString().slice(0, 10))
+
+  return (
+    <div style={{ overflowX: 'auto', direction: 'ltr' }}>
+      <div style={{ display: 'flex', minWidth: NAME_W + totalW + 'px' }}>
+
+        {/* שמות פרויקטים */}
+        <div style={{ width: NAME_W, flexShrink: 0, borderLeft: '1px solid #e2e8f0' }}>
+          <div style={{ height: HDR_H, background: '#f1f5f9', borderBottom: '2px solid #e2e8f0' }} />
+          {rows.map((r, i) => (
+            <div key={r.id} style={{ height: ROW_H, display: 'flex', alignItems: 'center', paddingRight: '12px', paddingLeft: '8px', background: i % 2 === 0 ? '#fff' : '#fafafa', borderBottom: '1px solid #f1f5f9', direction: 'rtl' }}>
+              <span style={{ fontSize: '12px', fontWeight: '700', color: '#1e3a5f', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', width: '100%' }}>{r.name}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* SVG ציר זמן */}
+        <svg width={totalW} height={svgH} style={{ flexShrink: 0, display: 'block' }}>
+          {/* רקע חודשים + כותרות */}
+          {months.map((m, i) => {
+            const x = i * MONTH_W
+            const showYear = i === 0 || m.getMonth() === 0
+            return (
+              <g key={i}>
+                <rect x={x} y={0} width={MONTH_W} height={svgH} fill={i % 2 === 0 ? '#fafafa' : '#fff'} stroke="#e8ecf0" strokeWidth="0.5" />
+                {showYear && <text x={x + 4} y={16} fontSize="9" fill="#94a3b8" fontFamily="Arial,sans-serif">{m.getFullYear()}</text>}
+                <text x={x + MONTH_W / 2} y={HDR_H - 10} textAnchor="middle" fontSize="11" fontWeight="600" fill="#475569" fontFamily="Arial,sans-serif">
+                  {MONTH_HE[m.getMonth()]}
+                </text>
+              </g>
+            )
+          })}
+          <line x1={0} y1={HDR_H} x2={totalW} y2={HDR_H} stroke="#e2e8f0" strokeWidth="2" />
+
+          {/* שורות פרויקטים */}
+          {rows.map((r, i) => {
+            const y    = HDR_H + i * ROW_H
+            const clr  = GANTT_CLR[r.cardStatus] || '#94a3b8'
+            const xs   = r.milestones.map(m => toX(m.date))
+            const x1   = Math.min(...xs), x2 = Math.max(...xs)
+            const doneXs = r.milestones.filter(m => m.done).map(m => toX(m.date))
+            const dx1  = doneXs.length ? Math.min(...doneXs) : null
+            const dx2  = doneXs.length ? Math.max(...doneXs) : null
+            const cy   = y + ROW_H / 2
+
+            return (
+              <g key={r.id}>
+                <line x1={0} y1={y + ROW_H} x2={totalW} y2={y + ROW_H} stroke="#f1f5f9" strokeWidth="1" />
+
+                {/* בר רקע */}
+                {x2 > x1 && <rect x={x1} y={cy - 5} width={x2 - x1} height={10} rx={5} fill={clr + '25'} stroke={clr + '60'} strokeWidth="1" />}
+
+                {/* בר התקדמות (milestones שהושלמו) */}
+                {dx1 !== null && dx2 !== null && dx2 > dx1 &&
+                  <rect x={dx1} y={cy - 5} width={dx2 - dx1} height={10} rx={5} fill={clr} opacity={0.85} />}
+
+                {/* מרקרי אבני דרך */}
+                {r.milestones.map((m, mi) => {
+                  const mx = toX(m.date)
+                  return (
+                    <g key={mi}>
+                      <circle cx={mx} cy={cy} r={7} fill={m.done ? clr : '#fff'} stroke={clr} strokeWidth={2} />
+                      {m.done
+                        ? <text x={mx} y={cy + 3.5} textAnchor="middle" fontSize="8" fill="#fff" fontFamily="Arial" fontWeight="bold">✓</text>
+                        : <circle cx={mx} cy={cy} r={2.5} fill={clr} />}
+                      <title>{m.name}{m.date ? ' · ' + m.date.split('-').reverse().join('/') : ''}</title>
+                    </g>
+                  )
+                })}
+              </g>
+            )
+          })}
+
+          {/* קו היום */}
+          {todayX >= 0 && todayX <= totalW && (
+            <g>
+              <line x1={todayX} y1={HDR_H} x2={todayX} y2={svgH} stroke="#ef4444" strokeWidth="1.5" strokeDasharray="5,3" opacity={0.75} />
+              <rect x={todayX - 18} y={HDR_H - 14} width={36} height={14} rx={4} fill="#ef4444" opacity={0.9} />
+              <text x={todayX} y={HDR_H - 4} textAnchor="middle" fontSize="9" fill="#fff" fontFamily="Arial" fontWeight="bold">היום</text>
+            </g>
+          )}
+        </svg>
+      </div>
+    </div>
+  )
+}
+
 export default function ParkingProjectsEmbed({ tab }) {
   const [projects, setProjects] = useState(load)
   const [dashboardSection, setDashboardSection] = useState('')
+  const [showGantt, setShowGantt] = useState(false)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -638,8 +758,30 @@ export default function ParkingProjectsEmbed({ tab }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '20px 0 14px' }}>
             <div style={{ flex: 1, height: '1px', background: '#e2e8f0' }} />
             <span style={{ fontSize: '16px', fontWeight: '700', color: '#1e3a5f', whiteSpace: 'nowrap' }}>פרויקטים בביצוע</span>
+            <button onClick={() => setShowGantt(v => !v)}
+              style={{ padding: '4px 12px', fontSize: '12px', fontWeight: '600', border: '1px solid', borderRadius: '999px', cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s',
+                background: showGantt ? '#1e3a5f' : '#fff', color: showGantt ? '#fff' : '#1e3a5f', borderColor: '#1e3a5f' }}>
+              📅 גאנט
+            </button>
             <div style={{ flex: 1, height: '1px', background: '#e2e8f0' }} />
           </div>
+
+          {showGantt && (
+            <div style={{ marginBottom: '20px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 1px 6px rgba(0,0,0,0.05)' }}>
+              <div style={{ padding: '10px 16px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontWeight: '700', fontSize: '13px', color: '#1e3a5f' }}>גאנט — אבני דרך</span>
+                <div style={{ display: 'flex', gap: '14px', fontSize: '11px', color: '#64748b' }}>
+                  {Object.entries(GANTT_CLR).map(([k, c]) => {
+                    const label = { signed:'נחתם', advance:'מקדמה', ordered:'הזמנה', arrived:'הגיע', install:'התקנה', done:'הסתיים' }[k]
+                    return <span key={k} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <span style={{ width: 10, height: 10, borderRadius: '50%', background: c, display: 'inline-block' }} />{label}
+                    </span>
+                  })}
+                </div>
+              </div>
+              <GanttChart projects={visible} />
+            </div>
+          )}
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '14px' }}>
             {visible.length === 0 && <div style={{ gridColumn: '1/-1', padding: '40px', textAlign: 'center', color: '#9ca3af', fontSize: '14px' }}>אין פרויקטים בסטטוס זה</div>}
