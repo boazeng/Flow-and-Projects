@@ -12,15 +12,16 @@ const PROJECT_STATUSES = [
 ]
 
 const INITIAL_PROJECTS = [
-  { id: 'danial',      name: 'דניאל',              status: 'quotes', developer: '',       handler: '', price: '1,750,000', advance: '',        updateDate: '2026-06-02', statusNote: 'מחכים להתייחסות לקוח לחוזה' },
-  { id: 'bilo',        name: 'בילו',               status: 'quotes', developer: 'ריק',    handler: '', price: '2,000,000', advance: '200,000', updateDate: '2026-06-07', statusNote: 'נשלח לחתימה (במקדמה חלק בערבות)' },
-  { id: 'zota',        name: 'זוטא',               status: 'quotes', developer: 'פיני',   handler: '', price: '6,630,000', advance: '',        updateDate: '2026-06-07', statusNote: 'פגישה בשבוע הבא' },
-  { id: 'yarkon-108',  name: 'הירקון 108',          status: 'quotes', developer: 'קבוצה',  handler: '', price: '1,850,000', advance: '',        updateDate: '2026-06-08', statusNote: 'שלחנו הצעה לתשלום מקדמה עם ערבות - ממתינים ללקוח' },
-  { id: 'bloch',       name: 'בלוך',               status: 'quotes', developer: 'נרשא',   handler: '', price: '1,848,000', advance: '',        updateDate: '2026-06-07', statusNote: 'נשלח חוזה אחרון אחרי הערות לחתימה' },
-  { id: 'yarkon-28',   name: 'הירקון 28',           status: 'quotes', developer: 'יוחנוף', handler: '', price: '1,900,000', advance: '',        updateDate: '2026-06-02', statusNote: 'נשלח חוזה מכר ללקוח' },
-  { id: 'hara',        name: 'הראה',               status: 'quotes', developer: 'זוארץ',  handler: '', price: '2,600,000', advance: '',        updateDate: '2026-06-07', statusNote: 'בעיית נגישות בתכנון' },
-  { id: 'rav-amial',   name: 'הרב עמיאל',           status: 'quotes', developer: 'פרטי',   handler: '', price: '2,085,000', advance: '',        updateDate: '2026-02-07', statusNote: 'שלחנו הסכם מכר עם התייחסות הלקוח, ממתינים לפגישה' },
-  { id: 'yahl',        name: 'יה"ל',               status: 'quotes', developer: 'אלתן',   handler: '', price: '2,170,000', advance: '',        updateDate: '2026-06-02', statusNote: 'ממתינים להתייחסות לחוזה' },
+  { id: 'danial',     name: 'דניאל',     status: 'quotes', code: 'UPT531', location: 'בת ים',    type: 'Permitmatic', spots: '30', percentage: '90', developer: '',       handler: '', price: '1,750,000', advance: '',        updateDate: '2026-06-02', statusNote: 'מחכים להתייחסות לקוח לחוזה' },
+  { id: 'bilo',       name: 'בילו',      status: 'quotes', code: 'UPT001', location: 'תל אביב',  type: 'Sales',       spots: '10', percentage: '90', developer: 'ריק',    handler: '', price: '2,000,000', advance: '200,000', updateDate: '2026-06-07', statusNote: 'נשלח לחתימה (במקדמה חלק בערבות)' },
+  { id: 'zota',       name: 'זוטא',      status: 'quotes', code: 'UPT021', location: 'ירושלים',  type: 'Room',        spots: '35', percentage: '50', developer: 'פיני',   handler: '', price: '6,630,000', advance: '',        updateDate: '2026-06-07', statusNote: 'פגישה בשבוע הבא' },
+  { id: 'yarkon-108', name: 'הירקון 108', status: 'quotes', code: 'UPT154', location: 'תל אביב', type: 'Permitmatic', spots: '22', percentage: '90', developer: 'קבוצה',  handler: '', price: '1,850,000', advance: '',        updateDate: '2026-06-08', statusNote: 'שלחנו הצעה לתשלום מקדמה עם ערבות - ממתינים ללקוח' },
+  { id: 'bloch',      name: 'בלוך',      status: 'quotes', code: '',       location: '',         type: 'Permitmatic', spots: '20', percentage: '90', developer: 'נרשא',   handler: '', price: '1,848,000', advance: '',        updateDate: '2026-06-07', statusNote: 'נשלח חוזה אחרון אחרי הערות לחתימה' },
+  { id: 'yarkon-28',  name: 'הירקון 28', status: 'quotes', code: 'UPT147', location: 'תל אביב',  type: 'Permitmatic', spots: '12', percentage: '90', developer: 'יוחנוף', handler: '', price: '1,900,000', advance: '',        updateDate: '2026-06-02', statusNote: 'נשלח חוזה מכר ללקוח' },
+  { id: 'hara',       name: 'הראה',      status: 'quotes', code: 'UPT178', location: 'רמת גן',   type: 'Permitmatic', spots: '28', percentage: '90', developer: 'זוארץ',  handler: '', price: '2,600,000', advance: '',        updateDate: '2026-06-07', statusNote: 'בעיית נגישות בתכנון' },
+  { id: 'rav-amial',  name: 'הרב עמיאל', status: 'quotes', code: 'UPT176', location: 'תל אביב',  type: 'Permitmatic', spots: '8',  percentage: '40', developer: 'פרטי',   handler: '', price: '2,085,000', advance: '',        updateDate: '2026-02-07', statusNote: 'שלחנו הסכם מכר עם התייחסות הלקוח, ממתינים לפגישה' },
+  { id: 'yahl',       name: 'יה"ל',     status: 'quotes', code: '',       location: '',         type: 'Permitmatic', spots: '5',  percentage: '100',developer: 'אלתן',   handler: '', price: '2,170,000', advance: '',        updateDate: '2026-06-02', statusNote: 'ממתינים להתייחסות לחוזה' },
+  { id: 'gorlo',      name: 'גורלו 11',  status: 'quotes', code: 'UPT207', location: 'תל אביב',  type: 'Permitmatic', spots: '10', percentage: '100',developer: '',       handler: '', price: '2,750,000', advance: '',        updateDate: '', statusNote: '' },
   { id: 'pnkas-24',       name: 'פנקס 24',               status: 'in-progress', developer: '', price: '', advance: '', updateDate: '', statusNote: '' },
   { id: 'nahariya',       name: 'נהריה',                 status: 'in-progress', developer: '', price: '', advance: '', updateDate: '', statusNote: '' },
   { id: 'ein-hakore',     name: 'עין הקורא',             status: 'in-progress', developer: '', price: '', advance: '', updateDate: '', statusNote: '' },
@@ -58,6 +59,7 @@ const loadProjectDetails = (projectId) => {
 
 const mergeProjectWithDetails = (project) => {
   const details = loadProjectDetails(project.id)
+  const initial = INITIAL_PROJECTS.find(p => p.id === project.id)
   return {
     ...project,
     name: project.name || details.name || details.client || project.id,
@@ -80,6 +82,11 @@ const mergeProjectWithDetails = (project) => {
     cli_paid: details.cli_paid || project.cli_paid || '',
     mfr_currency: details.mfr_currency || project.mfr_currency || '€',
     cli_currency: details.cli_currency || project.cli_currency || '₪',
+    code:       project.code       ?? initial?.code       ?? '',
+    location:   project.location   ?? initial?.location   ?? '',
+    type:       project.type       ?? initial?.type       ?? '',
+    spots:      project.spots      ?? initial?.spots      ?? '',
+    percentage: project.percentage ?? initial?.percentage ?? '',
   }
 }
 
@@ -102,7 +109,12 @@ const recoverProjectsFromDetails = () => {
 
 const load = () => {
   const stored = loadProjectListFromStorage()
-  if (stored && stored.length > 0) return stored.map(mergeProjectWithDetails)
+  if (stored && stored.length > 0) {
+    const merged   = stored.map(mergeProjectWithDetails)
+    const storedIds = new Set(stored.map(p => p.id))
+    const newOnes  = INITIAL_PROJECTS.filter(p => !storedIds.has(p.id))
+    return [...merged, ...newOnes]
+  }
   const fromDetails = recoverProjectsFromDetails()
   return fromDetails.length > 0 ? fromDetails : INITIAL_PROJECTS
 }
@@ -271,71 +283,212 @@ export default function ParkingProjectsEmbed({ tab }) {
     <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
 
       {/* ─── מו"מ ─── */}
-      {tab === 'quotes' && (
-        <>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-            <span style={{ fontSize: '12px', color: '#9ca3af' }}>{visible.length} פרויקטים</span>
-            <button onClick={() => {
-              const rows = visible.map(p => `<tr>
-                <td style="padding:8px 10px;border-bottom:1px solid #e5e7eb;font-weight:600;color:#1e3a5f;">${p.name}</td>
-                <td style="padding:8px 10px;border-bottom:1px solid #e5e7eb;color:#6b7280;">${p.developer || '—'}</td>
-                <td style="padding:8px 10px;border-bottom:1px solid #e5e7eb;color:#374151;">${p.handler || '—'}</td>
-                <td style="padding:8px 10px;border-bottom:1px solid #e5e7eb;text-align:right;direction:ltr;color:#15803d;font-weight:bold;">${p.price || '—'}</td>
-                <td style="padding:8px 10px;border-bottom:1px solid #e5e7eb;text-align:right;direction:ltr;">${p.advance || '—'}</td>
-                <td style="padding:8px 10px;border-bottom:1px solid #e5e7eb;text-align:center;">${p.updateDate ? fmtDate(p.updateDate) : '—'}</td>
-                <td style="padding:8px 10px;border-bottom:1px solid #e5e7eb;color:#78350f;">${p.statusNote || ''}</td>
-              </tr>`).join('')
-              const html = `<!DOCTYPE html><html dir="rtl" lang="he"><head><meta charset="UTF-8"><title>מו"מ — פרויקטי חניה</title>
-                <style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:Arial,sans-serif;font-size:13px;color:#1e293b;padding:28px;direction:rtl;}
-                h1{font-size:18px;font-weight:800;color:#1e3a5f;margin-bottom:4px;}.sub{font-size:12px;color:#64748b;margin-bottom:20px;}
-                table{width:100%;border-collapse:collapse;}th{background:#1e3a5f;color:#fff;padding:9px 10px;font-size:12px;text-align:right;}
-                tr:nth-child(even){background:#f8fafc;}</style></head><body>
-                <h1>פרויקטים במשא ומתן — חניה</h1>
-                <div class="sub">הודפס: ${new Date().toLocaleDateString('he-IL')} | ${visible.length} פרויקטים</div>
-                <table><thead><tr><th>פרויקט</th><th>יזם</th><th>גורם מטפל</th><th style="text-align:left;direction:ltr;">מחיר ₪</th>
-                <th style="text-align:left;direction:ltr;">מקדמה ₪</th><th style="text-align:center;">עדכון</th><th>סטטוס / הערה</th></tr></thead>
-                <tbody>${rows}</tbody></table></body></html>`
-              const w = window.open('', '_blank', 'width=900,height=700')
-              w.document.write(html); w.document.close(); w.focus()
-              setTimeout(() => { w.print(); w.close() }, 400)
-            }} style={{ padding: '5px 14px', background: '#f1f5f9', color: '#475569', border: '1px solid #e2e8f0', borderRadius: '7px', fontSize: '12px', cursor: 'pointer' }}>
-              🖨️ הדפס PDF
-            </button>
-          </div>
+      {tab === 'quotes' && (() => {
+        const totalPipeline  = visible.reduce((s, p) => s + toNum(p.price), 0)
+        const totalAdvances  = visible.reduce((s, p) => s + toNum(p.advance), 0)
+        const withAdvance    = visible.filter(p => toNum(p.advance) > 0).length
+        const totalSpots     = visible.reduce((s, p) => s + (parseInt(p.spots) || 0), 0)
+        const COLS           = '1.9fr 0.6fr 0.55fr 0.45fr 1fr 0.85fr 0.75fr 1.9fr 22px'
+        const now            = Date.now()
+        const msPerDay       = 86400 * 1000
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1.3fr 0.6fr 0.65fr 0.9fr 0.8fr 0.8fr 2.1fr 24px', gap: '0 12px', padding: '9px 16px', background: '#1e3a5f', borderRadius: '8px 8px 0 0', direction: 'rtl' }}>
-            {['פרויקט', 'יזם', 'גורם מטפל', 'מחיר ₪', 'מקדמה ₪', 'עדכון', 'סטטוס / הערה', ''].map(h => (
-              <div key={h} style={{ fontSize: '11px', color: '#93c5fd', fontWeight: '700', letterSpacing: '0.03em' }}>{h}</div>
-            ))}
-          </div>
+        const TYPE_STYLE = {
+          'Permitmatic': { bg: '#dcfce7', color: '#15803d' },
+          'Sales':       { bg: '#dbeafe', color: '#1d4ed8' },
+          'Room':        { bg: '#ede9fe', color: '#7c3aed' },
+        }
 
-          <div style={{ display: 'flex', flexDirection: 'column', border: '1px solid #e5e7eb', borderTop: 'none', borderRadius: '0 0 8px 8px', overflow: 'hidden' }}>
-            {visible.length === 0 && <div style={{ padding: '32px', textAlign: 'center', color: '#9ca3af', fontSize: '14px' }}>אין פרויקטים בסטטוס זה</div>}
-            {visible.map((p, idx) => (
-              <div key={p.id} style={{ display: 'grid', gridTemplateColumns: '1.3fr 0.6fr 0.65fr 0.9fr 0.8fr 0.8fr 2.1fr 24px', gap: '0 12px', alignItems: 'center', background: idx % 2 === 0 ? '#fff' : '#f9fafb', borderBottom: '1px solid #f3f4f6', padding: '9px 16px', direction: 'rtl', transition: 'background 0.1s' }}
-                onMouseEnter={e => e.currentTarget.style.background = '#fffbeb'}
-                onMouseLeave={e => e.currentTarget.style.background = idx % 2 === 0 ? '#fff' : '#f9fafb'}
-              >
-                <input value={p.name} onChange={e => update(p.id, 'name', e.target.value)} style={{ ...cardInput, fontSize: '13px', fontWeight: '700', color: '#1e3a5f' }} />
-                <input value={p.developer} onChange={e => update(p.id, 'developer', e.target.value)} placeholder="—" style={{ ...cardInput, fontSize: '12px', color: '#6b7280' }} />
-                <input value={p.handler || ''} onChange={e => update(p.id, 'handler', e.target.value)} placeholder="—" style={{ ...cardInput, fontSize: '12px', color: '#374151' }} />
-                <input value={p.price} onChange={e => update(p.id, 'price', e.target.value)} onBlur={e => update(p.id, 'price', fmtAmount(e.target.value))} placeholder="—" style={{ ...cardInput, fontSize: '12px', fontWeight: '700', color: '#15803d', textAlign: 'right', direction: 'ltr' }} />
-                <input value={p.advance} onChange={e => update(p.id, 'advance', e.target.value)} onBlur={e => update(p.id, 'advance', fmtAmount(e.target.value))} placeholder="—" style={{ ...cardInput, fontSize: '12px', color: '#374151', textAlign: 'right', direction: 'ltr' }} />
-                <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-                  {p.updateDate
-                    ? <span style={{ fontSize: '11px', background: '#fef3c7', color: '#92400e', padding: '2px 7px', borderRadius: '10px', fontWeight: '600', whiteSpace: 'nowrap' }}>{fmtDate(p.updateDate)}</span>
-                    : <span style={{ fontSize: '12px', color: '#d1d5db' }}>—</span>}
-                  <input type="date" value={p.updateDate} onChange={e => update(p.id, 'updateDate', e.target.value)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', width: '18px', padding: 0, opacity: 0.3 }} title="בחר תאריך" />
+        const printQuotes = () => {
+          const totalPr = visible.reduce((s, p) => s + toNum(p.price), 0)
+          const totalAd = visible.reduce((s, p) => s + toNum(p.advance), 0)
+          const totSp   = visible.reduce((s, p) => s + (parseInt(p.spots) || 0), 0)
+          const typeClr = { Permitmatic: '#15803d', Sales: '#1d4ed8', Room: '#7c3aed' }
+          const rows = visible.map((p, i) => {
+            const hasAdv = toNum(p.advance) > 0
+            const tc = typeClr[p.type] || '#475569'
+            return `<tr style="background:${i % 2 === 0 ? '#fff' : '#f8fafc'};">
+              <td style="padding:9px 10px;border-bottom:1px solid #e5e7eb;">
+                <div style="font-weight:700;color:#1e3a5f;font-size:13px;">${p.name}</div>
+                ${p.code || p.location ? `<div style="font-size:10px;color:#94a3b8;margin-top:2px;">${[p.code, p.location].filter(Boolean).join(' · ')}</div>` : ''}
+              </td>
+              <td style="padding:9px 10px;border-bottom:1px solid #e5e7eb;color:#6b7280;">${p.developer || '—'}</td>
+              <td style="padding:9px 10px;border-bottom:1px solid #e5e7eb;"><span style="font-size:11px;font-weight:700;color:${tc};">${p.type || '—'}</span></td>
+              <td style="padding:9px 10px;border-bottom:1px solid #e5e7eb;text-align:center;font-weight:700;">${p.spots || '—'}</td>
+              <td style="padding:9px 10px;border-bottom:1px solid #e5e7eb;direction:ltr;text-align:right;color:#15803d;font-weight:700;">${p.price || '—'}</td>
+              <td style="padding:9px 10px;border-bottom:1px solid #e5e7eb;direction:ltr;text-align:right;color:${hasAdv ? '#0369a1' : '#94a3b8'};font-weight:${hasAdv ? '700' : '400'};">${p.advance || '—'}</td>
+              <td style="padding:9px 10px;border-bottom:1px solid #e5e7eb;text-align:center;white-space:nowrap;">${p.updateDate ? fmtDate(p.updateDate) : '—'}</td>
+              <td style="padding:9px 10px;border-bottom:1px solid #e5e7eb;color:#78350f;">${p.statusNote || ''}</td>
+            </tr>`
+          }).join('')
+          const html = `<!DOCTYPE html><html dir="rtl" lang="he"><head><meta charset="UTF-8"><title>מו"מ — פרויקטי חניה</title>
+            <style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:Arial,sans-serif;font-size:13px;color:#1e293b;padding:28px;direction:rtl;}
+            h1{font-size:20px;font-weight:800;color:#1e3a5f;margin-bottom:4px;}.sub{font-size:12px;color:#64748b;margin-bottom:16px;}
+            .kpi{display:flex;gap:16px;margin-bottom:20px;flex-wrap:wrap;}.kpi-box{border:1px solid #e2e8f0;border-radius:10px;padding:12px 16px;min-width:140px;}
+            .kpi-label{font-size:10px;color:#94a3b8;font-weight:600;margin-bottom:4px;}.kpi-val{font-size:18px;font-weight:800;}
+            table{width:100%;border-collapse:collapse;}th{background:#1e3a5f;color:#fff;padding:10px;font-size:11px;text-align:right;}
+            tfoot td{background:#f8fafc;font-weight:700;border-top:2px solid #e2e8f0;padding:9px 10px;}
+            @media print{@page{margin:1.5cm;}}</style></head><body>
+            <h1>פרויקטים במשא ומתן — חניה</h1>
+            <div class="sub">הודפס: ${new Date().toLocaleDateString('he-IL')} · ${visible.length} פרויקטים</div>
+            <div class="kpi">
+              <div class="kpi-box"><div class="kpi-label">שווי פייפליין</div><div class="kpi-val" style="color:#1e3a5f;direction:ltr;text-align:right;">${totalPr.toLocaleString('he-IL')} ₪</div></div>
+              <div class="kpi-box"><div class="kpi-label">מקדמות שנגבו</div><div class="kpi-val" style="color:#0369a1;direction:ltr;text-align:right;">${totalAd.toLocaleString('he-IL')} ₪</div></div>
+              <div class="kpi-box"><div class="kpi-label">סה"כ מקומות</div><div class="kpi-val" style="color:#7c3aed;">${totSp}</div></div>
+            </div>
+            <table><thead><tr><th>פרויקט</th><th>יזם</th><th>סוג</th><th style="text-align:center;">מ'</th><th style="direction:ltr;text-align:right;">מחיר ₪</th>
+            <th style="direction:ltr;text-align:right;">מקדמה ₪</th><th style="text-align:center;">עדכון</th><th>סטטוס / הערה</th></tr></thead>
+            <tbody>${rows}</tbody>
+            <tfoot><tr><td colspan="3">סה"כ</td>
+              <td style="text-align:center;">${totSp}</td>
+              <td style="direction:ltr;text-align:right;color:#15803d;">${totalPr.toLocaleString('he-IL')} ₪</td>
+              <td style="direction:ltr;text-align:right;color:#0369a1;">${totalAd > 0 ? totalAd.toLocaleString('he-IL') + ' ₪' : '—'}</td>
+              <td colspan="2"></td></tr></tfoot>
+            </table></body></html>`
+          const w = window.open('', '_blank', 'width=1000,height=720')
+          w.document.write(html); w.document.close(); w.focus()
+          setTimeout(() => { w.print(); w.close() }, 450)
+        }
+
+        return (
+          <>
+            {/* KPI summary cards */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '22px', direction: 'rtl' }}>
+              {[
+                { label: 'שווי פייפליין כולל', value: `${totalPipeline.toLocaleString('he-IL')} ₪`, color: '#1e3a5f', bg: '#eff6ff', border: '#bfdbfe' },
+                { label: 'מקדמות שנגבו',       value: totalAdvances > 0 ? `${totalAdvances.toLocaleString('he-IL')} ₪` : '—',  color: '#0369a1', bg: '#f0f9ff', border: '#bae6fd' },
+                { label: 'פרויקטים במשא ומתן', value: `${visible.length} פרויקטים · ${totalSpots} מקומות`, color: '#7c3aed', bg: '#faf5ff', border: '#e9d5ff' },
+              ].map(({ label, value, color, bg, border }) => (
+                <div key={label} style={{ background: bg, border: `1px solid ${border}`, borderRadius: '14px', padding: '16px 20px' }}>
+                  <div style={{ fontSize: '11px', color: '#64748b', fontWeight: '600', marginBottom: '8px', letterSpacing: '0.04em' }}>{label}</div>
+                  <div style={{ fontSize: '20px', fontWeight: '800', color, direction: 'ltr', textAlign: 'right' }}>{value}</div>
                 </div>
-                <input value={p.statusNote} onChange={e => update(p.id, 'statusNote', e.target.value)} placeholder="הערה / סטטוס..." style={{ ...cardInput, fontSize: '12px', color: '#78350f' }} />
-                <button onClick={() => deleteProject(p.id, p.name)} title="מחק" style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#d1d5db', fontSize: '13px', padding: 0, lineHeight: 1, alignSelf: 'center' }}
-                  onMouseEnter={e => e.currentTarget.style.color = '#dc2626'}
-                  onMouseLeave={e => e.currentTarget.style.color = '#d1d5db'}>✕</button>
-              </div>
-            ))}
-          </div>
-        </>
-      )}
+              ))}
+            </div>
+
+            {/* Top bar */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+              <span style={{ fontSize: '12px', color: '#94a3b8' }}>{visible.length} פרויקטים</span>
+              <button onClick={printQuotes} style={{ padding: '5px 14px', background: '#f1f5f9', color: '#475569', border: '1px solid #e2e8f0', borderRadius: '7px', fontSize: '12px', cursor: 'pointer' }}>
+                🖨️ הדפס PDF
+              </button>
+            </div>
+
+            {/* Table header */}
+            <div style={{ display: 'grid', gridTemplateColumns: COLS, gap: '0 10px', padding: '10px 18px', background: '#1e3a5f', borderRadius: '10px 10px 0 0', direction: 'rtl' }}>
+              {['פרויקט', 'יזם', 'סוג', 'מ\'', 'מחיר ₪', 'מקדמה ₪', 'עדכון', 'סטטוס / הערה', ''].map(h => (
+                <div key={h} style={{ fontSize: '11px', color: '#93c5fd', fontWeight: '700', letterSpacing: '0.04em' }}>{h}</div>
+              ))}
+            </div>
+
+            {/* Rows */}
+            <div style={{ border: '1px solid #e5e7eb', borderTop: 'none', borderRadius: '0 0 10px 10px', overflow: 'hidden' }}>
+              {visible.length === 0 && (
+                <div style={{ padding: '40px', textAlign: 'center', color: '#9ca3af', fontSize: '14px' }}>אין פרויקטים בסטטוס זה</div>
+              )}
+              {visible.map((p, idx) => {
+                const hasAdvance = toNum(p.advance) > 0
+                const daysSince  = p.updateDate ? Math.round((now - new Date(p.updateDate).getTime()) / msPerDay) : null
+                const isStale    = daysSince !== null && daysSince > 14
+                const rowBg      = idx % 2 === 0 ? '#fff' : '#f9fafb'
+                const accentClr  = hasAdvance ? '#16a34a' : '#e2e8f0'
+                const typeStyle  = TYPE_STYLE[p.type] || { bg: '#f1f5f9', color: '#64748b' }
+                return (
+                  <div key={p.id}
+                    style={{ display: 'grid', gridTemplateColumns: COLS, gap: '0 10px', alignItems: 'center', background: rowBg, borderBottom: '1px solid #f1f5f9', padding: '10px 18px', direction: 'rtl', borderRight: `3px solid ${accentClr}`, transition: 'background 0.12s' }}
+                    onMouseEnter={e => e.currentTarget.style.background = '#fffbeb'}
+                    onMouseLeave={e => e.currentTarget.style.background = rowBg}
+                  >
+                    {/* שם פרויקט + קוד + מיקום */}
+                    <div>
+                      <input value={p.name} onChange={e => update(p.id, 'name', e.target.value)}
+                        style={{ ...cardInput, fontSize: '14px', fontWeight: '700', color: '#1e3a5f', width: '100%' }} />
+                      {(p.code || p.location) && (
+                        <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '1px', display: 'flex', gap: '6px' }}>
+                          {p.code && <span>{p.code}</span>}
+                          {p.code && p.location && <span>·</span>}
+                          {p.location && <span>{p.location}</span>}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* יזם */}
+                    <input value={p.developer} onChange={e => update(p.id, 'developer', e.target.value)}
+                      placeholder="—" style={{ ...cardInput, fontSize: '12px', color: '#6b7280' }} />
+
+                    {/* סוג — type chip */}
+                    <div>
+                      <select value={p.type || ''} onChange={e => update(p.id, 'type', e.target.value)}
+                        style={{ border: 'none', background: typeStyle.bg, color: typeStyle.color, fontWeight: '700', fontSize: '11px', borderRadius: '999px', padding: '3px 8px', cursor: 'pointer', fontFamily: 'inherit', outline: 'none', width: '100%' }}>
+                        <option value="">—</option>
+                        <option value="Permitmatic">Permitmatic</option>
+                        <option value="Sales">Sales</option>
+                        <option value="Room">Room</option>
+                      </select>
+                    </div>
+
+                    {/* מקומות */}
+                    <input value={p.spots || ''} onChange={e => update(p.id, 'spots', e.target.value)}
+                      placeholder="—" type="number" min="0"
+                      style={{ ...cardInput, fontSize: '13px', fontWeight: '700', color: '#374151', textAlign: 'center', width: '100%' }} />
+
+                    {/* מחיר */}
+                    <input value={p.price} onChange={e => update(p.id, 'price', e.target.value)}
+                      onBlur={e => update(p.id, 'price', fmtAmount(e.target.value))} placeholder="—"
+                      style={{ ...cardInput, fontSize: '13px', fontWeight: '700', color: '#15803d', textAlign: 'right', direction: 'ltr' }} />
+
+                    {/* מקדמה */}
+                    <div style={{ background: hasAdvance ? '#eff6ff' : 'transparent', borderRadius: '6px', padding: hasAdvance ? '2px 6px' : '0' }}>
+                      <input value={p.advance} onChange={e => update(p.id, 'advance', e.target.value)}
+                        onBlur={e => update(p.id, 'advance', fmtAmount(e.target.value))} placeholder="—"
+                        style={{ ...cardInput, fontSize: '12px', fontWeight: hasAdvance ? '700' : '400', color: hasAdvance ? '#0369a1' : '#94a3b8', textAlign: 'right', direction: 'ltr' }} />
+                    </div>
+
+                    {/* תאריך עדכון */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      {p.updateDate
+                        ? <span style={{ fontSize: '11px', background: isStale ? '#fef3c7' : '#e0f2fe', color: isStale ? '#92400e' : '#0369a1', padding: '2px 8px', borderRadius: '10px', fontWeight: '600', whiteSpace: 'nowrap' }}>
+                            {fmtDate(p.updateDate)}
+                          </span>
+                        : <span style={{ fontSize: '12px', color: '#d1d5db' }}>—</span>}
+                      <input type="date" value={p.updateDate} onChange={e => update(p.id, 'updateDate', e.target.value)}
+                        style={{ border: 'none', background: 'transparent', cursor: 'pointer', width: '18px', padding: 0, opacity: 0.3 }} title="בחר תאריך" />
+                    </div>
+
+                    {/* הערה / סטטוס */}
+                    <div style={{ background: p.statusNote ? '#fefce8' : 'transparent', borderRadius: '6px', padding: p.statusNote ? '2px 6px' : '0' }}>
+                      <input value={p.statusNote} onChange={e => update(p.id, 'statusNote', e.target.value)}
+                        placeholder="הערה / סטטוס..."
+                        style={{ ...cardInput, fontSize: '12px', color: '#78350f' }} />
+                    </div>
+
+                    {/* מחק */}
+                    <button onClick={() => deleteProject(p.id, p.name)} title="מחק"
+                      style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#d1d5db', fontSize: '13px', padding: 0, lineHeight: 1, alignSelf: 'center' }}
+                      onMouseEnter={e => e.currentTarget.style.color = '#dc2626'}
+                      onMouseLeave={e => e.currentTarget.style.color = '#d1d5db'}>✕</button>
+                  </div>
+                )
+              })}
+
+              {/* Summary footer */}
+              {visible.length > 0 && (
+                <div style={{ display: 'grid', gridTemplateColumns: COLS, gap: '0 10px', padding: '10px 18px', background: '#f8fafc', borderTop: '2px solid #e2e8f0', direction: 'rtl' }}>
+                  <div style={{ fontSize: '12px', fontWeight: '700', color: '#475569' }}>סה"כ</div>
+                  <div /><div />
+                  <div style={{ fontSize: '13px', fontWeight: '800', color: '#374151', textAlign: 'center' }}>{totalSpots}</div>
+                  <div style={{ fontSize: '14px', fontWeight: '800', color: '#15803d', direction: 'ltr', textAlign: 'right' }}>
+                    {totalPipeline.toLocaleString('he-IL')} ₪
+                  </div>
+                  <div style={{ fontSize: '13px', fontWeight: '700', color: '#0369a1', direction: 'ltr', textAlign: 'right' }}>
+                    {totalAdvances > 0 ? `${totalAdvances.toLocaleString('he-IL')} ₪` : '—'}
+                  </div>
+                  <div /><div /><div />
+                </div>
+              )}
+            </div>
+          </>
+        )
+      })()}
 
       {/* ─── בביצוע ─── */}
       {tab === 'in-progress' && (
