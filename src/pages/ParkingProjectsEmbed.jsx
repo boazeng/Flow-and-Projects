@@ -86,6 +86,7 @@ const mergeProjectWithDetails = (project) => {
     location:    project.location    ?? initial?.location    ?? '',
     type:        project.type        ?? initial?.type        ?? '',
     entranceType: project.entranceType ?? initial?.entranceType ?? '',
+    company:     project.company     ?? initial?.company     ?? '',
     spots:       project.spots       ?? initial?.spots       ?? '',
     percentage:  project.percentage  ?? initial?.percentage  ?? '',
   }
@@ -415,7 +416,7 @@ export default function ParkingProjectsEmbed({ tab }) {
         const totalAdvances  = visible.reduce((s, p) => s + toNum(p.advance), 0)
         const withAdvance    = visible.filter(p => toNum(p.advance) > 0).length
         const totalSpots     = visible.reduce((s, p) => s + (parseInt(p.spots) || 0), 0)
-        const COLS           = '1.6fr 0.5fr 0.5fr 0.6fr 0.38fr 0.4fr 0.9fr 0.78fr 0.65fr 1.5fr 22px'
+        const COLS           = '1.6fr 0.5fr 0.6fr 0.7fr 0.55fr 0.4fr 0.9fr 0.65fr 1.5fr 22px'
         const now            = Date.now()
         const msPerDay       = 86400 * 1000
 
@@ -433,20 +434,17 @@ export default function ParkingProjectsEmbed({ tab }) {
           const totSp   = visible.reduce((s, p) => s + (parseInt(p.spots) || 0), 0)
           const typeClr = { Parkmatrix: '#15803d', Robot: '#dc2626', Permitmatic: '#15803d', Sales: '#1d4ed8', Room: '#7c3aed' }
           const rows = visible.map((p, i) => {
-            const hasAdv = toNum(p.advance) > 0
-            const tc = typeClr[p.type] || '#475569'
             return `<tr style="background:${i % 2 === 0 ? '#fff' : '#f8fafc'};">
               <td style="padding:9px 10px;border-bottom:1px solid #e5e7eb;">
                 <div style="font-weight:700;color:#1e3a5f;font-size:13px;">${p.name}</div>
                 ${p.code || p.location ? `<div style="font-size:10px;color:#94a3b8;margin-top:2px;">${[p.code, p.location].filter(Boolean).join(' · ')}</div>` : ''}
               </td>
               <td style="padding:9px 10px;border-bottom:1px solid #e5e7eb;color:#6b7280;">${p.developer || '—'}</td>
-              <td style="padding:9px 10px;border-bottom:1px solid #e5e7eb;"><span style="font-size:11px;font-weight:700;color:${tc};">${p.type || '—'}</span></td>
               <td style="padding:9px 10px;border-bottom:1px solid #e5e7eb;color:#475569;font-size:11px;">${p.entranceType || '—'}</td>
+              <td style="padding:9px 10px;border-bottom:1px solid #e5e7eb;color:#0369a1;">${p.company || '—'}</td>
               <td style="padding:9px 10px;border-bottom:1px solid #e5e7eb;text-align:center;font-weight:700;">${p.spots || '—'}</td>
               <td style="padding:9px 10px;border-bottom:1px solid #e5e7eb;text-align:center;font-weight:700;color:#7c3aed;">${p.percentage ? p.percentage + '%' : '—'}</td>
               <td style="padding:9px 10px;border-bottom:1px solid #e5e7eb;direction:ltr;text-align:right;color:#15803d;font-weight:700;">${p.price || '—'}</td>
-              <td style="padding:9px 10px;border-bottom:1px solid #e5e7eb;direction:ltr;text-align:right;color:${hasAdv ? '#0369a1' : '#94a3b8'};font-weight:${hasAdv ? '700' : '400'};">${p.advance || '—'}</td>
               <td style="padding:9px 10px;border-bottom:1px solid #e5e7eb;text-align:center;white-space:nowrap;">${p.updateDate ? fmtDate(p.updateDate) : '—'}</td>
               <td style="padding:9px 10px;border-bottom:1px solid #e5e7eb;color:#78350f;">${p.statusNote || ''}</td>
             </tr>`
@@ -463,17 +461,15 @@ export default function ParkingProjectsEmbed({ tab }) {
             <div class="sub">הודפס: ${new Date().toLocaleDateString('he-IL')} · ${visible.length} פרויקטים</div>
             <div class="kpi">
               <div class="kpi-box"><div class="kpi-label">שווי פייפליין</div><div class="kpi-val" style="color:#1e3a5f;direction:ltr;text-align:right;">${totalPr > 0 ? totalPr.toLocaleString('he-IL') + ' ₪' : '—'}</div></div>
-              <div class="kpi-box"><div class="kpi-label">מקדמות שנגבו</div><div class="kpi-val" style="color:#0369a1;direction:ltr;text-align:right;">${totalAd > 0 ? totalAd.toLocaleString('he-IL') + ' ₪' : '—'}</div></div>
               <div class="kpi-box"><div class="kpi-label">סה"כ מקומות</div><div class="kpi-val" style="color:#7c3aed;">${totSp}</div></div>
             </div>
-            <table><thead><tr><th>פרויקט</th><th>יזם</th><th>סוג</th><th>כניסה</th><th style="text-align:center;">מ'</th><th style="text-align:center;">%</th><th style="direction:ltr;text-align:right;">מחיר ₪</th>
-            <th style="direction:ltr;text-align:right;">מקדמה ₪</th><th style="text-align:center;">עדכון</th><th>סטטוס / הערה</th></tr></thead>
+            <table><thead><tr><th>פרויקט</th><th>יזם</th><th>כניסה</th><th>חברה</th><th style="text-align:center;">מקומות חניה</th><th style="text-align:center;">%</th><th style="direction:ltr;text-align:right;">מחיר ₪</th>
+            <th style="text-align:center;">עדכון</th><th>סטטוס / הערה</th></tr></thead>
             <tbody>${rows}</tbody>
             <tfoot><tr><td colspan="4">סה"כ</td>
               <td style="text-align:center;">${totSp}</td>
               <td></td>
               <td style="direction:ltr;text-align:right;color:#15803d;">${totalPr > 0 ? totalPr.toLocaleString('he-IL') + ' ₪' : '—'}</td>
-              <td style="direction:ltr;text-align:right;color:#0369a1;">${totalAd > 0 ? totalAd.toLocaleString('he-IL') + ' ₪' : '—'}</td>
               <td colspan="2"></td></tr></tfoot>
             </table></body></html>`
           const w = window.open('', '_blank', 'width=1000,height=720')
@@ -493,7 +489,7 @@ export default function ParkingProjectsEmbed({ tab }) {
 
             {/* Table header */}
             <div style={{ display: 'grid', gridTemplateColumns: COLS, gap: '0 10px', padding: '10px 18px', background: '#1e3a5f', borderRadius: '10px 10px 0 0', direction: 'rtl' }}>
-              {['פרויקט', 'יזם', 'סוג', 'כניסה', 'מ\'', '%', 'מחיר ₪', 'מקדמה ₪', 'עדכון', 'סטטוס / הערה', ''].map(h => (
+              {['פרויקט', 'יזם', 'כניסה', 'חברה', 'מקומות חניה', '%', 'מחיר ₪', 'עדכון', 'סטטוס / הערה', ''].map(h => (
                 <div key={h} style={{ fontSize: '11px', color: '#93c5fd', fontWeight: '700', letterSpacing: '0.04em' }}>{h}</div>
               ))}
             </div>
@@ -533,19 +529,6 @@ export default function ParkingProjectsEmbed({ tab }) {
                     <input value={p.developer} onChange={e => update(p.id, 'developer', e.target.value)}
                       placeholder="—" style={{ ...cardInput, fontSize: '12px', color: '#6b7280' }} />
 
-                    {/* סוג — type chip */}
-                    <div>
-                      <select value={p.type || ''} onChange={e => update(p.id, 'type', e.target.value)}
-                        style={{ border: 'none', background: typeStyle.bg, color: typeStyle.color, fontWeight: '700', fontSize: '11px', borderRadius: '999px', padding: '3px 8px', cursor: 'pointer', fontFamily: 'inherit', outline: 'none', width: '100%' }}>
-                        <option value="">—</option>
-                        <option value="Parkmatrix">Parkmatrix</option>
-                        <option value="Robot">Robot</option>
-                        <option value="Permitmatic">Permitmatic</option>
-                        <option value="Sales">Sales</option>
-                        <option value="Room">Room</option>
-                      </select>
-                    </div>
-
                     {/* כניסה — entrance type */}
                     <select value={p.entranceType || ''} onChange={e => update(p.id, 'entranceType', e.target.value)}
                       style={{ border: 'none', background: '#f8fafc', color: '#475569', fontWeight: '600', fontSize: '11px', borderRadius: '6px', padding: '3px 6px', cursor: 'pointer', fontFamily: 'inherit', outline: 'none', width: '100%' }}>
@@ -555,7 +538,11 @@ export default function ParkingProjectsEmbed({ tab }) {
                       <option value="Horizontal">Horizontal</option>
                     </select>
 
-                    {/* מקומות */}
+                    {/* חברה */}
+                    <input value={p.company || ''} onChange={e => update(p.id, 'company', e.target.value)}
+                      placeholder="—" style={{ ...cardInput, fontSize: '12px', color: '#0369a1' }} />
+
+                    {/* מקומות חניה */}
                     <input value={p.spots || ''} onChange={e => update(p.id, 'spots', e.target.value)}
                       placeholder="—" type="number" min="0"
                       style={{ ...cardInput, fontSize: '13px', fontWeight: '700', color: '#374151', textAlign: 'center', width: '100%' }} />
@@ -569,13 +556,6 @@ export default function ParkingProjectsEmbed({ tab }) {
                     <input value={p.price} onChange={e => update(p.id, 'price', e.target.value)}
                       onBlur={e => update(p.id, 'price', fmtAmount(e.target.value))} placeholder="—"
                       style={{ ...cardInput, fontSize: '13px', fontWeight: '700', color: '#15803d', textAlign: 'right', direction: 'ltr' }} />
-
-                    {/* מקדמה */}
-                    <div style={{ background: hasAdvance ? '#eff6ff' : 'transparent', borderRadius: '6px', padding: hasAdvance ? '2px 6px' : '0' }}>
-                      <input value={p.advance} onChange={e => update(p.id, 'advance', e.target.value)}
-                        onBlur={e => update(p.id, 'advance', fmtAmount(e.target.value))} placeholder="—"
-                        style={{ ...cardInput, fontSize: '12px', fontWeight: hasAdvance ? '700' : '400', color: hasAdvance ? '#0369a1' : '#94a3b8', textAlign: 'right', direction: 'ltr' }} />
-                    </div>
 
                     {/* תאריך עדכון */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -613,9 +593,6 @@ export default function ParkingProjectsEmbed({ tab }) {
                   <div />
                   <div style={{ fontSize: '14px', fontWeight: '800', color: '#15803d', direction: 'ltr', textAlign: 'right' }}>
                     {totalPipeline > 0 ? `${totalPipeline.toLocaleString('he-IL')} ₪` : '—'}
-                  </div>
-                  <div style={{ fontSize: '13px', fontWeight: '700', color: '#0369a1', direction: 'ltr', textAlign: 'right' }}>
-                    {totalAdvances > 0 ? `${totalAdvances.toLocaleString('he-IL')} ₪` : '—'}
                   </div>
                   <div /><div /><div />
                 </div>
