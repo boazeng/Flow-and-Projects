@@ -488,7 +488,7 @@ export default function ParkingProjectsEmbed({ tab }) {
             {/* Table header */}
             <div style={{ display: 'grid', gridTemplateColumns: COLS, gap: '0 10px', padding: '10px 18px', background: '#1e3a5f', borderRadius: '10px 10px 0 0', direction: 'rtl' }}>
               {['פרויקט', 'יזם', 'מקומות חניה', '%', 'מחיר ₪', 'עדכון', 'סטטוס / הערה', ''].map(h => (
-                <div key={h} style={{ fontSize: '11px', color: '#93c5fd', fontWeight: '700', letterSpacing: '0.04em' }}>{h}</div>
+                <div key={h} style={{ fontSize: '13px', color: '#93c5fd', fontWeight: '700', letterSpacing: '0.04em' }}>{h}</div>
               ))}
             </div>
 
