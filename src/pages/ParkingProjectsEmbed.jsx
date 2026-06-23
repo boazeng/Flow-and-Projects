@@ -629,7 +629,7 @@ export default function ParkingProjectsEmbed({ tab }) {
 
                   {/* Header */}
                   <div style={{ padding: '9px 14px', background: '#f1f5f9', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontWeight: '700', fontSize: '13px', color: '#1e3a5f' }}>מצב כספי — חניה אורבנית</span>
+                    <span style={{ fontWeight: '700', fontSize: '13px', color: '#1e3a5f' }}>מצב כספי — חניה מקבוצה אורבנית</span>
                     <span style={{ fontSize: '11px', color: '#94a3b8' }}>{visible.length} פרויקטים</span>
                   </div>
 
@@ -691,7 +691,7 @@ export default function ParkingProjectsEmbed({ tab }) {
                         {dashboardSection === 'deposits'  && 'פירוט פקדונות'}
                         {dashboardSection === 'suppliers' && 'פירוט חוב ליצרן'}
                         {dashboardSection === 'clients'   && 'פירוט חייבים מלקוחות'}
-                        {dashboardSection === 'loans'     && 'פירוט הלוואות — חניה אורבנית'}
+                        {dashboardSection === 'loans'     && 'פירוט הלוואות — חניה מקבוצה אורבנית'}
                       </span>
                       <button type="button" onClick={() => setDashboardSection('')} style={{ border: 'none', background: '#f1f5f9', color: '#64748b', padding: '5px 10px', borderRadius: '6px', cursor: 'pointer', fontSize: '12px' }}>סגור</button>
                     </div>

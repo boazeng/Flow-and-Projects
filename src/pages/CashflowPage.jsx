@@ -12,17 +12,17 @@ import './CashflowPage.css'
 
 const COMPANIES = [
   { id: 'all', label: 'כל החברות' },
-  { id: 'חניה אורבנית', label: 'חניה אורבנית' },
+  { id: 'חניה אורבנית', label: 'חניה מקבוצה אורבנית' },
   { id: 'אחזקה אורבנית', label: 'אחזקה אורבנית' },
-  { id: 'אנרגיה ירוקה', label: 'אנרגיה ירוקה' },
+  { id: 'אנרגיה ירוקה', label: 'אנרגיה ירוקה מקבוצה אורבנית' },
 ]
 
 const COMPANY_LIST = ['חניה אורבנית', 'אחזקה אורבנית', 'אנרגיה ירוקה']
 
 const COMPANY_OPTIONS = [
-  { v: 'חניה אורבנית', l: 'חניה' },
+  { v: 'חניה אורבנית', l: 'חניה מקבוצה אורבנית' },
   { v: 'אחזקה אורבנית', l: 'אחזקה' },
-  { v: 'אנרגיה ירוקה', l: 'אנרגיה' },
+  { v: 'אנרגיה ירוקה', l: 'אנרגיה ירוקה מקבוצה אורבנית' },
 ]
 
 const RECURRENCE_LABEL = { monthly: 'חודשי', quarterly: 'רבעוני', annual: 'שנתי', 'one-time': 'חד פעמי' }
@@ -753,7 +753,7 @@ export default function CashflowPage() {
                               </td>
                               <td style={{ padding: '5px 12px', color: '#15803d', fontSize: '0.8rem' }}>{b.type === 'income' ? ils(b.amount) : ''}</td>
                               <td style={{ padding: '5px 12px', color: '#dc2626', fontSize: '0.8rem' }}>{b.type === 'expense' ? ils(b.amount) : ''}</td>
-                              <td style={{ padding: '5px 12px', color: '#64748b', fontSize: '0.8rem' }}>{isProj ? 'חניה אורבנית' : b.company}</td>
+                              <td style={{ padding: '5px 12px', color: '#64748b', fontSize: '0.8rem' }}>{isProj ? 'חניה מקבוצה אורבנית' : b.company}</td>
                               <td style={{ padding: '5px 12px', fontSize: '0.75rem', fontWeight: 600, color: isProj ? '#a855f7' : '#64748b' }}>{b.category}</td>
                             </tr>
                           )
@@ -1088,7 +1088,7 @@ export default function CashflowPage() {
                   return (
                     <div key={company} className="cf-card" style={{ marginBottom: '1.5rem', overflow: 'hidden' }}>
                       <div style={{ padding: '0.75rem 1.25rem', background: colors.bg, borderBottom: `2px solid ${colors.border}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
-                        <span style={{ fontWeight: 700, fontSize: '1.02rem', color: colors.text }}>{company}</span>
+                        <span style={{ fontWeight: 700, fontSize: '1.02rem', color: colors.text }}>{company === 'חניה אורבנית' ? 'חניה מקבוצה אורבנית' : company === 'אנרגיה ירוקה' ? 'אנרגיה ירוקה מקבוצה אורבנית' : company}</span>
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.8rem', fontSize: '0.78rem' }}>
                           {totalMonthlyInc > 0 && <span style={{ color: '#15803d' }}>הכנסה: <strong>{ils(totalMonthlyInc)}</strong></span>}
                           {totalMonthlyExp > 0 && <span style={{ color: '#dc2626' }}>הוצאה: <strong>{ils(totalMonthlyExp)}</strong></span>}
