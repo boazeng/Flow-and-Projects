@@ -518,7 +518,7 @@ export default function CashflowPage() {
                   return (
                     <div key={company} className="cf-card" style={{ borderTop: `4px solid ${c.border || '#e2e8f0'}` }}>
                       <div style={{ padding: '0.65rem 1rem', fontWeight: 700, fontSize: '0.95rem', color: c.text || '#1e293b', borderBottom: '1px solid #f1f5f9', background: c.bg || '#fafafa' }}>
-                        {company}
+                        {company === 'חניה אורבנית' ? 'חניה מקבוצה אורבנית' : company === 'אנרגיה ירוקה' ? 'אנרגיה ירוקה מקבוצה אורבנית' : company}
                       </div>
                       <div style={{ padding: '0.9rem 1rem' }}>
                         {banks.map((b, bi) => (
