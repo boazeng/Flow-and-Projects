@@ -11,6 +11,7 @@ localStorage key becomes a row, the value is the raw string the browser stored
 (JSON text for objects/arrays). This keeps the migration tiny — the existing
 backup file maps 1:1 to rows.
 """
+import json
 import os
 import sqlite3
 from contextlib import closing
@@ -109,6 +110,33 @@ def delete_state(key: str, _user=Depends(require_login)):
         c.execute("DELETE FROM app_state WHERE key = ?", (key,))
         c.commit()
     return {"ok": True}
+
+
+# ───────────────── server-to-server: bank balance push from tact-bankaccount ─────────────────
+@app.put("/api/bank-balances-push")
+async def push_bank_balances(request: Request):
+    """Receives bank balances from tact-bankaccount and merges into cashflow-bank-balances."""
+    expected_key = os.getenv("FLOW_PUSH_API_KEY", "")
+    if not expected_key:
+        raise HTTPException(503, "FLOW_PUSH_API_KEY not configured on server")
+    if request.headers.get("Authorization", "") != f"Bearer {expected_key}":
+        raise HTTPException(401, "Unauthorized")
+    body = await request.json()
+    if not isinstance(body, dict):
+        raise HTTPException(400, "Expected JSON object")
+    with closing(_conn()) as c:
+        row = c.execute("SELECT value FROM app_state WHERE key = 'cashflow-bank-balances'").fetchone()
+        existing = json.loads(row["value"]) if row else {}
+        existing.update(body)
+        c.execute(
+            """INSERT INTO app_state (key, value, updated_at)
+                   VALUES (?, ?, CURRENT_TIMESTAMP)
+               ON CONFLICT(key) DO UPDATE
+                   SET value = excluded.value, updated_at = CURRENT_TIMESTAMP""",
+            ("cashflow-bank-balances", json.dumps(existing, ensure_ascii=False)),
+        )
+        c.commit()
+    return {"ok": True, "updated": list(body.keys())}
 
 
 # ───────────────── serve the built SPA (behind the auth middleware) ─────────────────
