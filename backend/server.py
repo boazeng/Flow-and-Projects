@@ -22,13 +22,16 @@ from dotenv import load_dotenv
 
 # ── env resolution (mirrors the bank-discrepancies pattern) ──
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-_override = os.getenv("FLOW_ENV_FILE")                 # set explicitly in prod
-_shared = PROJECT_ROOT.parent / "env" / ".env"        # central folder (local dev)
-_local = PROJECT_ROOT / ".env"                         # fallback
+_override = os.getenv("FLOW_ENV_FILE")                          # set explicitly in prod
+_shared_docker = PROJECT_ROOT / "shared-credentials.env"        # mounted in Docker container
+_shared_dev    = PROJECT_ROOT.parent / "env" / ".env"           # central folder (local dev)
+_local         = PROJECT_ROOT / ".env"                          # fallback
 if _override and Path(_override).exists():
     _env_path = Path(_override)
-elif _shared.exists():
-    _env_path = _shared
+elif _shared_docker.exists():
+    _env_path = _shared_docker
+elif _shared_dev.exists():
+    _env_path = _shared_dev
 else:
     _env_path = _local
 load_dotenv(_env_path, override=True)

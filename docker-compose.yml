@@ -7,7 +7,6 @@ services:
       - "127.0.0.1:8093:8000"   # localhost only — the Cloudflare Tunnel connects locally
     env_file:
       - .env                    # Google OAuth + session secrets (never in git)
-      - path: ../env/.env       # shared credentials (Priority, etc.) — optional for local dev
-        required: false
     volumes:
-      - ./database:/app/database   # SQLite: flow.db (data) + auth.db (users) survive restarts
+      - ./database:/app/database          # SQLite: flow.db (data) + auth.db (users) survive restarts
+      - ../env/.env:/app/shared-credentials.env:ro   # shared Priority/API credentials
