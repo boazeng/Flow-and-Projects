@@ -512,7 +512,7 @@ export default function CashflowPage() {
                 </button>
                 {prioritySync.asOf && !prioritySync.loading && (
                   <span style={{ fontSize: '0.78rem', color: '#64748b' }}>
-                    עודכן מ-Priority · נכון ל-{new Date(prioritySync.asOf).toLocaleDateString('he-IL')}
+                    עודכן מ-Priority · נכון ל-{new Date().toLocaleDateString('he-IL')}
                   </span>
                 )}
                 {prioritySync.error && (
