@@ -256,6 +256,24 @@ export default function CashflowPage() {
     } catch {}
     return {}
   })
+  const [prioritySync, setPrioritySync] = useState({ loading: false, asOf: null, error: null })
+
+  const fetchPriorityBalances = async () => {
+    setPrioritySync(s => ({ ...s, loading: true, error: null }))
+    try {
+      const r = await fetch('/api/bank-balances')
+      if (!r.ok) throw new Error(`שגיאה ${r.status}`)
+      const { balances, as_of } = await r.json()
+      setBankBalances(prev => ({ ...prev, ...balances }))
+      if (as_of) setBalanceDate(as_of)
+      setPrioritySync({ loading: false, asOf: as_of, error: null })
+    } catch (e) {
+      setPrioritySync(s => ({ ...s, loading: false, error: e.message }))
+    }
+  }
+
+  useEffect(() => { fetchPriorityBalances() }, [])
+
   const [forecastView, setForecastView] = useState('monthly')
   const [selectedForecastMonth, setSelectedForecastMonth] = useState(() => {
     const now = new Date()
@@ -487,6 +505,20 @@ export default function CashflowPage() {
 
           return (
             <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
+                <button onClick={fetchPriorityBalances} disabled={prioritySync.loading}
+                  style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.4rem 1rem', background: '#eff6ff', color: '#1e40af', border: '1px solid #bfdbfe', borderRadius: '7px', fontSize: '0.82rem', fontWeight: 600, cursor: prioritySync.loading ? 'wait' : 'pointer' }}>
+                  {prioritySync.loading ? '⟳ טוען...' : '⟳ רענן מ-Priority'}
+                </button>
+                {prioritySync.asOf && !prioritySync.loading && (
+                  <span style={{ fontSize: '0.78rem', color: '#64748b' }}>
+                    עודכן מ-Priority · נכון ל-{new Date(prioritySync.asOf).toLocaleDateString('he-IL')}
+                  </span>
+                )}
+                {prioritySync.error && (
+                  <span style={{ fontSize: '0.78rem', color: '#dc2626' }}>שגיאה: {prioritySync.error}</span>
+                )}
+              </div>
               <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
                 {[
                   { label: 'סה"כ עו"ש',           val: totalChecking,   color: '#1e40af', bg: '#eff6ff', border: '#bfdbfe' },

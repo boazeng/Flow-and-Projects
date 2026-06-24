@@ -11,6 +11,7 @@ localStorage key becomes a row, the value is the raw string the browser stored
 (JSON text for objects/arrays). This keeps the migration tiny — the existing
 backup file maps 1:1 to rows.
 """
+import base64
 import json
 import os
 import sqlite3
@@ -32,6 +33,7 @@ else:
     _env_path = _local
 load_dotenv(_env_path, override=True)
 
+import httpx  # noqa: E402
 from fastapi import FastAPI, Request, Depends, HTTPException  # noqa: E402
 from fastapi.responses import FileResponse  # noqa: E402
 from fastapi.staticfiles import StaticFiles  # noqa: E402
@@ -39,6 +41,19 @@ from fastapi.staticfiles import StaticFiles  # noqa: E402
 from shared_auth import install_auth, require_login  # noqa: E402
 
 DIST_DIR = PROJECT_ROOT / "dist"
+
+# ── Priority ERP ──
+_PRIORITY_URL      = os.getenv("PRIORITY_URL_REAL", "").rstrip("/")
+_PRIORITY_USERNAME = os.getenv("PRIORITY_USERNAME", "")
+_PRIORITY_PASSWORD = os.getenv("PRIORITY_PASSWORD", "")
+
+# CASHNAME in Priority → internal key used in cashflow-bank-balances
+_PRIORITY_CASHNAME_MAP = {
+    "109-200": "חניה_פועלים",
+    "026-201": "אחזקה_דיסקונט",
+    "026-200": "אחזקה_מזרחי",
+    "110-201": "אנרגיה_פועלים",
+}
 DATA_DIR = Path(os.getenv("FLOW_DATA_DIR", str(PROJECT_ROOT / "database")))
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 STATE_DB = str(DATA_DIR / "flow.db")
@@ -137,6 +152,51 @@ async def push_bank_balances(request: Request):
         )
         c.commit()
     return {"ok": True, "updated": list(body.keys())}
+
+
+# ───────────────── Priority bank balances ─────────────────
+@app.get("/api/bank-balances")
+async def get_bank_balances_from_priority(_user=Depends(require_login)):
+    """Fetch latest closing balance per account from Priority BANKPAGES."""
+    if not _PRIORITY_URL or not _PRIORITY_USERNAME:
+        raise HTTPException(503, "Priority not configured (PRIORITY_URL_REAL / PRIORITY_USERNAME missing)")
+
+    cashnames = list(_PRIORITY_CASHNAME_MAP.keys())
+    filter_str = " or ".join(f"CASHNAME eq '{n}'" for n in cashnames)
+    auth_header = "Basic " + base64.b64encode(f"{_PRIORITY_USERNAME}:{_PRIORITY_PASSWORD}".encode()).decode()
+
+    async with httpx.AsyncClient(timeout=15) as client:
+        r = await client.get(
+            f"{_PRIORITY_URL}/BANKPAGES",
+            headers={"Authorization": auth_header, "Accept": "application/json"},
+            params={
+                "$filter": filter_str,
+                "$select": "CASHNAME,CLOSEBAL,CURDATE",
+                "$orderby": "CURDATE desc",
+                "$top": "200",
+            },
+        )
+    if not r.is_success:
+        raise HTTPException(502, f"Priority error {r.status_code}: {r.text[:200]}")
+
+    rows = r.json().get("value", [])
+
+    # Keep only the most-recent page per CASHNAME (list is already sorted desc)
+    latest: dict = {}
+    for row in rows:
+        if row["CASHNAME"] not in latest:
+            latest[row["CASHNAME"]] = row
+
+    balances: dict = {}
+    dates: list = []
+    for cashname, row in latest.items():
+        key = _PRIORITY_CASHNAME_MAP.get(cashname)
+        if key:
+            balances[key] = row["CLOSEBAL"]
+            if row.get("CURDATE"):
+                dates.append(row["CURDATE"][:10])
+
+    return {"balances": balances, "as_of": max(dates) if dates else None}
 
 
 # ───────────────── serve the built SPA (behind the auth middleware) ─────────────────
