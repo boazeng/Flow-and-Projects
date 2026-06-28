@@ -416,7 +416,7 @@ export default function ParkingProjectsEmbed({ tab }) {
         const totalAdvances  = visible.reduce((s, p) => s + toNum(p.advance), 0)
         const withAdvance    = visible.filter(p => toNum(p.advance) > 0).length
         const totalSpots     = visible.reduce((s, p) => s + (parseInt(p.spots) || 0), 0)
-        const COLS           = '1.6fr 0.5fr 0.55fr 0.4fr 0.9fr 0.65fr 1.5fr 22px'
+        const COLS           = '1.6fr 0.5fr 0.55fr 0.9fr 0.65fr 1.5fr 22px'
         const now            = Date.now()
         const msPerDay       = 86400 * 1000
 
@@ -441,7 +441,6 @@ export default function ParkingProjectsEmbed({ tab }) {
               </td>
               <td style="padding:9px 10px;border-bottom:1px solid #e5e7eb;color:#6b7280;">${p.developer || '—'}</td>
               <td style="padding:9px 10px;border-bottom:1px solid #e5e7eb;text-align:center;font-weight:700;">${p.spots || '—'}</td>
-              <td style="padding:9px 10px;border-bottom:1px solid #e5e7eb;text-align:center;font-weight:700;color:#7c3aed;">${p.percentage ? p.percentage + '%' : '—'}</td>
               <td style="padding:9px 10px;border-bottom:1px solid #e5e7eb;direction:ltr;text-align:right;color:#15803d;font-weight:700;">${p.price || '—'}</td>
               <td style="padding:9px 10px;border-bottom:1px solid #e5e7eb;text-align:center;white-space:nowrap;">${p.updateDate ? fmtDate(p.updateDate) : '—'}</td>
               <td style="padding:9px 10px;border-bottom:1px solid #e5e7eb;color:#78350f;">${p.statusNote || ''}</td>
@@ -461,12 +460,11 @@ export default function ParkingProjectsEmbed({ tab }) {
               <div class="kpi-box"><div class="kpi-label">שווי פייפליין</div><div class="kpi-val" style="color:#1e3a5f;direction:ltr;text-align:right;">${totalPr > 0 ? totalPr.toLocaleString('he-IL') + ' ₪' : '—'}</div></div>
               <div class="kpi-box"><div class="kpi-label">סה"כ מקומות</div><div class="kpi-val" style="color:#7c3aed;">${totSp}</div></div>
             </div>
-            <table><thead><tr><th>פרויקט</th><th>יזם</th><th style="text-align:center;">מקומות חניה</th><th style="text-align:center;">%</th><th style="direction:ltr;text-align:right;">מחיר ₪</th>
+            <table><thead><tr><th>פרויקט</th><th>יזם</th><th style="text-align:center;">מקומות חניה</th><th style="direction:ltr;text-align:right;">מחיר ₪</th>
             <th style="text-align:center;">עדכון</th><th>סטטוס / הערה</th></tr></thead>
             <tbody>${rows}</tbody>
             <tfoot><tr><td colspan="2">סה"כ</td>
               <td style="text-align:center;">${totSp}</td>
-              <td></td>
               <td style="direction:ltr;text-align:right;color:#15803d;">${totalPr > 0 ? totalPr.toLocaleString('he-IL') + ' ₪' : '—'}</td>
               <td colspan="2"></td></tr></tfoot>
             </table></body></html>`
@@ -487,7 +485,7 @@ export default function ParkingProjectsEmbed({ tab }) {
 
             {/* Table header */}
             <div style={{ display: 'grid', gridTemplateColumns: COLS, gap: '0 10px', padding: '10px 18px', background: '#1e3a5f', borderRadius: '10px 10px 0 0', direction: 'rtl' }}>
-              {['פרויקט', 'יזם', 'מקומות חניה', '%', 'מחיר ₪', 'עדכון', 'סטטוס / הערה', ''].map(h => (
+              {['פרויקט', 'יזם', 'מקומות חניה', 'מחיר ₪', 'עדכון', 'סטטוס / הערה', ''].map(h => (
                 <div key={h} style={{ fontSize: '13px', color: '#93c5fd', fontWeight: '700', letterSpacing: '0.04em' }}>{h}</div>
               ))}
             </div>
@@ -532,11 +530,6 @@ export default function ParkingProjectsEmbed({ tab }) {
                       placeholder="—" type="number" min="0"
                       style={{ ...cardInput, fontSize: '13px', fontWeight: '700', color: '#374151', textAlign: 'center', width: '100%' }} />
 
-                    {/* % */}
-                    <input value={p.percentage || ''} onChange={e => update(p.id, 'percentage', e.target.value)}
-                      placeholder="%" type="number" min="0" max="100"
-                      style={{ ...cardInput, fontSize: '12px', fontWeight: '700', color: '#7c3aed', textAlign: 'center', width: '100%' }} />
-
                     {/* מחיר */}
                     <input value={p.price} onChange={e => update(p.id, 'price', e.target.value)}
                       onBlur={e => update(p.id, 'price', fmtAmount(e.target.value))} placeholder="—"
@@ -573,7 +566,7 @@ export default function ParkingProjectsEmbed({ tab }) {
               {visible.length > 0 && (
                 <div style={{ display: 'grid', gridTemplateColumns: COLS, gap: '0 10px', padding: '10px 18px', background: '#f8fafc', borderTop: '2px solid #e2e8f0', direction: 'rtl' }}>
                   <div style={{ fontSize: '12px', fontWeight: '700', color: '#475569' }}>סה"כ</div>
-                  <div /><div /><div />
+                  <div /><div />
                   <div style={{ fontSize: '13px', fontWeight: '800', color: '#374151', textAlign: 'center' }}>{totalSpots}</div>
                   <div />
                   <div style={{ fontSize: '14px', fontWeight: '800', color: '#15803d', direction: 'ltr', textAlign: 'right' }}>
